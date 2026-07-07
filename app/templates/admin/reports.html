@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Raportet</h1></div>
+
+<div class="card">
+  <div class="card-title">Grupet — Pikë & Penalitete</div>
+  <table class="simple-table">
+    <thead><tr><th>Grupi</th><th>Pikë</th><th>Penalitete</th><th>Anëtarë</th></tr></thead>
+    <tbody>
+      {% for g in groups %}
+      <tr><td>{{ g.name }}</td><td>{{ g.points }}</td><td>{{ g.penalties }}</td><td>{{ g.members|length }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <div class="card-title">Kërkesa Ushqimore</div>
+  {% for key, count in dietary_counts.items() %}
+  <div class="card-row"><span>{{ key.replace('_',' ')|capitalize }}</span><span class="badge badge-sky">{{ count }}</span></div>
+  {% endfor %}
+</div>
+
+<div class="stat-grid">
+  <div class="stat-tile"><div class="stat-num">{{ allergy_count }}</div><div class="stat-label">Me alergji</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ medication_count }}</div><div class="stat-label">Marrin medikament</div></div>
+</div>
+{% endblock %}

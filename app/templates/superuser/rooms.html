@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block topbar %}
+<div class="top-bar" style="background:#0B1622; clip-path:none; padding-bottom:16px;">
+  <div class="app-shell"><a href="{{ url_for('superuser.dashboard') }}" style="color:#F0A93A;">← Paneli i Sistemit</a></div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Të gjitha Dhomat</h1></div>
+{% for b in buildings %}
+<div class="card">
+  <div class="card-title">{{ b.name }}</div>
+  {% for r in b.rooms %}
+  <div class="card-row"><span>Dhoma {{ r.number }}</span><span class="muted">{{ r.occupants|length }}/{{ r.capacity }}</span></div>
+  {% else %}
+  <p class="muted">S'ka dhoma ende.</p>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card"><p class="muted">S'ka ndërtesa ende.</p></div>
+{% endfor %}
+{% endblock %}

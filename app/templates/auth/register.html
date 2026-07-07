@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Formulari i Regjistrimit</h1></div>
+
+<form method="POST" novalidate>
+  {{ form.hidden_tag() }}
+
+  <div class="card">
+    <div class="form-section-title">Llogaria</div>
+    <label for="email">Email</label>
+    {{ form.email(id="email", type="email", autocomplete="email") }}
+    {% for e in form.email.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="password">Fjalëkalimi</label>
+    {{ form.password(id="password", type="password", autocomplete="new-password") }}
+    {% for e in form.password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="confirm_password">Konfirmo fjalëkalimin</label>
+    {{ form.confirm_password(id="confirm_password", type="password", autocomplete="new-password") }}
+    {% for e in form.confirm_password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+  </div>
+
+  <div class="card">
+    <div class="form-section-title">Informacion Personal</div>
+
+    <label for="first_name">Emri</label>
+    {{ form.first_name(id="first_name") }}
+    {% for e in form.first_name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="last_name">Mbiemri</label>
+    {{ form.last_name(id="last_name") }}
+    {% for e in form.last_name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="birth_date">Data e lindjes</label>
+    {{ form.birth_date(id="birth_date", type="date") }}
+    {% for e in form.birth_date.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    <div class="muted" id="age-hint" style="margin-top:4px;"></div>
+
+    <label for="gender">Gjinia</label>
+    {{ form.gender(id="gender") }}
+
+    <label for="phone">Numri i telefonit</label>
+    {{ form.phone(id="phone", type="tel") }}
+    {% for e in form.phone.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="address">Adresa</label>
+    {{ form.address(id="address") }}
+
+    <label for="city">Qyteti</label>
+    {{ form.city(id="city") }}
+    {% for e in form.city.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="emergency_contact_name">Kontakt emergjence — Emri i personit</label>
+    {{ form.emergency_contact_name(id="emergency_contact_name") }}
+    {% for e in form.emergency_contact_name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="emergency_contact_phone">Kontakt emergjence — Numri i telefonit</label>
+    {{ form.emergency_contact_phone(id="emergency_contact_phone", type="tel") }}
+    {% for e in form.emergency_contact_phone.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+  </div>
+
+  <div class="card">
+    <div class="form-section-title">Përvoja në Kamp</div>
+    <label for="attended_before">A ke marrë pjesë më parë në kampet Eagles of Hope?</label>
+    {{ form.attended_before(id="attended_before") }}
+
+    <div id="attended-fields">
+      <label for="times_attended">Sa herë ke marrë pjesë?</label>
+      {{ form.times_attended(id="times_attended") }}
+
+      <label for="last_year_attended">Në cilin vit?</label>
+      {{ form.last_year_attended(id="last_year_attended") }}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-section-title">Gjendja Shëndetësore</div>
+    <label for="has_allergies">A ke ndonjë alergji?</label>
+    {{ form.has_allergies(id="has_allergies") }}
+    <div id="allergy-fields">
+      <label for="allergies_description">Përshkruaj alergjinë</label>
+      {{ form.allergies_description(id="allergies_description") }}
+      {% for e in form.allergies_description.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+
+    <label for="health_notes">A ke ndonjë problem shëndetësor që organizatorët duhet ta dinë?</label>
+    {{ form.health_notes(id="health_notes") }}
+
+    <label for="takes_medication">A merr ndonjë medikament gjatë kampit?</label>
+    {{ form.takes_medication(id="takes_medication") }}
+    <div id="medication-fields">
+      <label for="medication_name">Cilin medikament?</label>
+      {{ form.medication_name(id="medication_name") }}
+      {% for e in form.medication_name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+      <label for="medication_instructions">A ka ndonjë udhëzim të veçantë?</label>
+      {{ form.medication_instructions(id="medication_instructions") }}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-section-title">Informacion Shtesë</div>
+    <label for="dietary_requirement">A ke kërkesa ushqimore?</label>
+    {{ form.dietary_requirement(id="dietary_requirement") }}
+    <div id="dietary-other-field">
+      <label for="dietary_other">Specifiko</label>
+      {{ form.dietary_other(id="dietary_other") }}
+    </div>
+
+    <label for="talent_description">A ke ndonjë talent ose aftësi që dëshiron ta ndash gjatë kampit?</label>
+    {{ form.talent_description(id="talent_description") }}
+
+    <label for="shirt_size">Masa e bluzës</label>
+    {{ form.shirt_size(id="shirt_size") }}
+  </div>
+
+  <div class="card" id="guardian-card" style="display:none;">
+    <div class="form-section-title">Pjesëmarrës nën 18 vjeç</div>
+    <p class="muted">Për pjesëmarrësit nën 18 vjeç kërkohet miratimi i një prindi ose kujdestari ligjor.</p>
+
+    <label for="guardian_name">Emri i prindit/kujdestarit</label>
+    {{ form.guardian_name(id="guardian_name") }}
+    {% for e in form.guardian_name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="guardian_phone">Numri i telefonit</label>
+    {{ form.guardian_phone(id="guardian_phone", type="tel") }}
+    {% for e in form.guardian_phone.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="guardian_email">Email</label>
+    {{ form.guardian_email(id="guardian_email", type="email") }}
+    {% for e in form.guardian_email.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="guardian_address">Adresa</label>
+    {{ form.guardian_address(id="guardian_address") }}
+
+    <p class="muted" style="margin-top:16px;"><em>"Unë jam prindi ose kujdestari ligjor dhe jap leje për pjesëmarrjen në kamp."</em></p>
+
+    <label for="guardian_signature">Firma (shkruaj emrin e plotë)</label>
+    {{ form.guardian_signature(id="guardian_signature") }}
+    {% for e in form.guardian_signature.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="guardian_consent_date">Data</label>
+    {{ form.guardian_consent_date(id="guardian_consent_date", type="date") }}
+    {% for e in form.guardian_consent_date.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+  </div>
+
+  <div class="card">
+    <div class="form-section-title">Deklarata Finale</div>
+
+    <div class="checkbox-row">
+      {{ form.accepted_info_accurate() }}
+      <label for="{{ form.accepted_info_accurate.id }}">Informacioni i dhënë është i saktë.</label>
+    </div>
+    <div class="checkbox-row">
+      {{ form.accepted_rules() }}
+      <label for="{{ form.accepted_rules.id }}">Do të respektoj rregullat e kampit dhe drejtuesit.</label>
+    </div>
+    <div class="checkbox-row">
+      {{ form.accepted_safety_notice() }}
+      <label for="{{ form.accepted_safety_notice.id }}">Kuptoj se organizatorët do të bëjnë maksimumin për sigurinë e pjesëmarrësve.</label>
+    </div>
+    <div class="checkbox-row">
+      {{ form.accepted_media_release() }}
+      <label for="{{ form.accepted_media_release.id }}">Pranoj fotografimin dhe filmimin gjatë kampit për promovim në rrjete sociale.</label>
+    </div>
+    <div class="checkbox-row">
+      {{ form.accepted_privacy_policy() }}
+      <label for="{{ form.accepted_privacy_policy.id }}">Pajtohem me politikën e privatësisë.</label>
+    </div>
+  </div>
+
+  {{ form.rules_accepted() }}
+  <button type="submit" class="btn btn-primary btn-block" style="margin: 6px 0 30px;">Përfundo regjistrimin</button>
+</form>
+
+<script>
+function toggle(el, show){ el.style.display = show ? '' : 'none'; }
+
+const attended = document.getElementById('attended_before');
+const attendedFields = document.getElementById('attended-fields');
+function syncAttended(){ toggle(attendedFields, attended.value === 'po'); }
+attended.addEventListener('change', syncAttended); syncAttended();
+
+const allergy = document.getElementById('has_allergies');
+const allergyFields = document.getElementById('allergy-fields');
+function syncAllergy(){ toggle(allergyFields, allergy.value === 'po'); }
+allergy.addEventListener('change', syncAllergy); syncAllergy();
+
+const medication = document.getElementById('takes_medication');
+const medicationFields = document.getElementById('medication-fields');
+function syncMedication(){ toggle(medicationFields, medication.value === 'po'); }
+medication.addEventListener('change', syncMedication); syncMedication();
+
+const dietary = document.getElementById('dietary_requirement');
+const dietaryOther = document.getElementById('dietary-other-field');
+function syncDietary(){ toggle(dietaryOther, dietary.value === 'tjeter'); }
+dietary.addEventListener('change', syncDietary); syncDietary();
+
+const birthDate = document.getElementById('birth_date');
+const guardianCard = document.getElementById('guardian-card');
+const ageHint = document.getElementById('age-hint');
+function syncAge(){
+  if(!birthDate.value) { toggle(guardianCard, false); ageHint.textContent=''; return; }
+  const bd = new Date(birthDate.value);
+  const today = new Date();
+  let age = today.getFullYear() - bd.getFullYear();
+  const m = today.getMonth() - bd.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) age--;
+  ageHint.textContent = 'Mosha: ' + age + ' vjeç';
+  toggle(guardianCard, age < 18);
+}
+birthDate.addEventListener('change', syncAge); syncAge();
+</script>
+{% endblock %}

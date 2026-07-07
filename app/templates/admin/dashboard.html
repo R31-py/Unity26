@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Paneli i Administratorit</h1></div>
+
+<div class="stat-grid">
+  <div class="stat-tile"><div class="stat-num">{{ stats.total_campers }}</div><div class="stat-label">Kampistë</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.total_staff }}</div><div class="stat-label">Staf</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.total_groups }}</div><div class="stat-label">Grupe</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.total_rooms }}</div><div class="stat-label">Dhoma</div></div>
+</div>
+
+{% if stats.unassigned_campers %}
+<div class="card" style="margin-top:14px;">
+  <span class="badge badge-coral">Vëmendje</span>
+  <p>{{ stats.unassigned_campers }} kampistë ende s'janë caktuar në asnjë grup.</p>
+  <a class="btn btn-outline" href="{{ url_for('admin.groups') }}">Cakto grupet</a>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-title">Aktiviteti i Fundit (Audit Log)</div>
+  {% for log in recent_logs %}
+  <div class="card-row">
+    <span>{{ log.action }}</span>
+    <span class="muted">{{ log.created_at.strftime('%d/%m %H:%M') }}</span>
+  </div>
+  {% else %}
+  <p class="muted">S'ka aktivitet ende.</p>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <div class="card-title">Qasje të Shpejta</div>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('admin.announcements') }}">Njoftimet</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('admin.schedule') }}">Orari</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('admin.settings') }}">Cilësimet</a>
+  <a class="btn btn-outline btn-block" href="{{ url_for('admin.reports') }}">Raportet</a>
+</div>
+{% endblock %}

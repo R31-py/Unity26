@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Dhomat</h1></div>
+
+<div class="card">
+  <div class="card-title">Krijo Ndërtesë</div>
+  <form method="POST" action="{{ url_for('admin.create_building') }}" style="display:flex; gap:8px;">
+    <input type="text" name="name" placeholder="p.sh. Ndërtesa B" required>
+    <button class="btn btn-primary" type="submit">Krijo</button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-title">Krijo Dhomë</div>
+  <form method="POST" action="{{ url_for('admin.create_room') }}">
+    <label>Ndërtesa</label>
+    <select name="building_id" required>
+      {% for b in buildings %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}
+    </select>
+    <label>Numri i dhomës</label>
+    <input type="text" name="number" required>
+    <label>Kapaciteti</label>
+    <input type="number" name="capacity" value="4" min="1" max="20">
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Krijo</button>
+  </form>
+</div>
+
+{% for b in buildings %}
+<div class="card">
+  <div class="card-title">{{ b.name }}</div>
+  {% for r in b.rooms %}
+  <div class="card-row"><span>Dhoma {{ r.number }}</span><span class="muted">{{ r.occupants|length }}/{{ r.capacity }}</span></div>
+  {% else %}
+  <p class="muted">S'ka dhoma ende.</p>
+  {% endfor %}
+</div>
+{% endfor %}
+
+<div class="card">
+  <div class="card-title">Cakto Kampistë Pa Dhomë</div>
+  {% for p in unassigned %}
+  <form method="POST" action="{{ url_for('admin.assign_room') }}" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+    <input type="hidden" name="profile_id" value="{{ p.id }}">
+    <span style="flex:1;">{{ p.first_name }} {{ p.last_name }}</span>
+    <select name="room_id" onchange="this.form.submit()">
+      <option value="">Zgjidh dhomë</option>
+      {% for b in buildings %}
+        {% for r in b.rooms %}
+        <option value="{{ r.id }}">{{ b.name }} — {{ r.number }}</option>
+        {% endfor %}
+      {% endfor %}
+    </select>
+  </form>
+  {% else %}
+  <p class="muted">Të gjithë kampistët kanë dhomë.</p>
+  {% endfor %}
+</div>
+{% endblock %}

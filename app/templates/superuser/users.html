@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block topbar %}
+<div class="top-bar" style="background:#0B1622; clip-path:none; padding-bottom:16px;">
+  <div class="app-shell"><a href="{{ url_for('superuser.dashboard') }}" style="color:#F0A93A;">← Paneli i Sistemit</a></div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Të gjithë Përdoruesit</h1></div>
+{% for u in users %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between;">
+    <div>
+      <strong>{{ u.full_name }}</strong>
+      <div class="muted">{{ u.email }}</div>
+    </div>
+    <span class="badge badge-sky">{{ u.role.value }}</span>
+  </div>
+  {% if not u.is_active_account %}<span class="badge badge-coral">Joaktiv</span>{% endif %}
+  {% if u.camper_profile %}
+  <div class="muted" style="margin-top:6px;">Grup: {{ u.camper_profile.group.name if u.camper_profile.group else '—' }} · Dhomë: {{ u.camper_profile.room.number if u.camper_profile.room else '—' }}</div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block topbar %}
+<div class="top-bar" style="background:#0B1622; clip-path:none; padding-bottom:16px;">
+  <div class="app-shell"><a href="{{ url_for('superuser.dashboard') }}" style="color:#F0A93A;">← Paneli i Sistemit</a></div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Të gjitha Grupet</h1></div>
+{% for g in groups %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between;">
+    <strong>{{ g.name }}</strong>
+    <span class="badge" style="background:{{ g.color }}22; color:{{ g.color }};">{{ g.points }} pikë</span>
+  </div>
+  <div class="card-row"><span>Drejtuesi</span><span>{{ g.leader.full_name if g.leader else '—' }}</span></div>
+  <div class="card-row"><span>Anëtarë</span><span>{{ g.members|length }}</span></div>
+  <div class="card-row" style="border-bottom:none;"><span>Penalitete</span><span>{{ g.penalties }}</span></div>
+</div>
+{% endfor %}
+{% endblock %}

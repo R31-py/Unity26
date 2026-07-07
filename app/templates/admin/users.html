@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Përdoruesit</h1></div>
+
+<div class="card" style="display:flex; gap:8px; flex-wrap:wrap;">
+  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users') }}">Të gjithë</a>
+  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users', role='kampist') }}">Kampistë</a>
+  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users', role='staff') }}">Staf</a>
+  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users', role='admin') }}">Administratorë</a>
+</div>
+
+{% for u in users %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div>
+      <strong>{{ u.full_name }}</strong>
+      <div class="muted">{{ u.email }}{% if u.phone %} · {{ u.phone }}{% endif %}</div>
+    </div>
+    <span class="badge badge-sky">{{ u.role.value }}</span>
+  </div>
+
+  {% if not u.is_active_account %}<span class="badge badge-coral">Joaktiv</span>{% endif %}
+
+  {% if u.camper_profile %}
+  <div class="muted" style="margin-top:6px;">
+    Grup: {{ u.camper_profile.group.name if u.camper_profile.group else '—' }} ·
+    Dhomë: {{ u.camper_profile.room.number if u.camper_profile.room else '—' }}
+  </div>
+  {% endif %}
+
+  <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+    {% if u.role.value == 'kampist' %}
+    <form method="POST" action="{{ url_for('admin.make_staff', user_id=u.id) }}">
+      <button class="btn btn-outline btn-sm" type="submit">Bëje staf</button>
+    </form>
+    {% endif %}
+    <form method="POST" action="{{ url_for('admin.toggle_active', user_id=u.id) }}">
+      <button class="btn btn-outline btn-sm" type="submit">
+        {{ 'Çaktivizo' if u.is_active_account else 'Aktivizo' }}
+      </button>
+    </form>
+  </div>
+
+  {% if u.role.value == 'staff' %}
+  <form method="POST" action="{{ url_for('admin.update_permissions', user_id=u.id) }}" style="margin-top:10px; border-top:1px solid var(--line); padding-top:10px;">
+    <div class="card-title" style="font-size:.85rem;">Lejet</div>
+    {% set granted = u.staff_permissions|map(attribute='permission')|map(attribute='value')|list %}
+    {% for perm in all_permissions %}
+    <label class="checkbox-row">
+      <input type="checkbox" name="permissions" value="{{ perm.value }}" {% if perm.value in granted %}checked{% endif %}>
+      {{ perm.value.replace('_',' ')|capitalize }}
+    </label>
+    {% endfor %}
+    <button class="btn btn-primary btn-sm" type="submit" style="margin-top:8px;">Ruaj lejet</button>
+  </form>
+  {% endif %}
+</div>
+{% else %}
+<div class="card"><p class="muted">S'ka përdorues në këtë kategori.</p></div>
+{% endfor %}
+{% endblock %}

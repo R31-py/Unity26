@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Orari i Kampit</h1></div>
+
+<div class="card">
+  <div class="card-title">Shto Aktivitet</div>
+  <form method="POST" action="{{ url_for('admin.create_schedule_item') }}">
+    <label>Dita</label>
+    <input type="text" name="day_label" placeholder="p.sh. E Hënë / Dita 1" required>
+    <label>Ora</label>
+    <input type="text" name="time_label" placeholder="p.sh. 08:00" required>
+    <label>Titulli i aktivitetit</label>
+    <input type="text" name="title" placeholder="p.sh. Mëngjesi" required>
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Shto</button>
+  </form>
+</div>
+
+{% set ns = namespace(current_day=None) %}
+{% for item in items %}
+  {% if item.day_label != ns.current_day %}
+    {% if not loop.first %}</div>{% endif %}
+    <div class="card">
+      <div class="card-title">{{ item.day_label }}</div>
+    {% set ns.current_day = item.day_label %}
+  {% endif %}
+  <div class="card-row">
+    <span><strong>{{ item.time_label }}</strong> — {{ item.title }}</span>
+    <form method="POST" action="{{ url_for('admin.delete_schedule_item', item_id=item.id) }}">
+      <button type="submit" style="border:none;background:none;color:var(--coral);cursor:pointer;">fshij</button>
+    </form>
+  </div>
+  {% if loop.last %}</div>{% endif %}
+{% else %}
+<div class="card"><p class="muted">Orari s'është vendosur ende.</p></div>
+{% endfor %}
+{% endblock %}

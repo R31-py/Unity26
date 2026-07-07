@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Kyçu</h1></div>
+<div class="card">
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <label for="email">Email</label>
+    {{ form.email(id="email", type="email", autocomplete="email", placeholder="emri@shembull.com") }}
+    {% for e in form.email.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <label for="password">Fjalëkalimi</label>
+    {{ form.password(id="password", type="password", autocomplete="current-password") }}
+    {% for e in form.password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+
+    <button type="submit" class="btn btn-primary btn-block" style="margin-top:22px;">Kyçu</button>
+  </form>
+</div>
+<p style="text-align:center;">S'ke llogari? <a href="{{ url_for('auth.rules') }}">Regjistrohu këtu</a></p>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block topbar %}
+<div class="top-bar" style="background:linear-gradient(135deg,#0B1622 0%, #1A2E44 100%); clip-path:none; padding-bottom:20px;">
+  <div class="app-shell top-bar-row">
+    <div class="brand">
+      <div class="brand-badge" style="background:#2B3A4E; color:#F0A93A;">SU</div>
+      <div>
+        <div class="brand-name">Paneli i Sistemit</div>
+        <div class="brand-slogan">Qasje e plotë · vetëm-lexim · e padukshme</div>
+      </div>
+    </div>
+    <a class="icon-btn" href="{{ url_for('auth.logout') }}" title="Dil">⏻</a>
+  </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <p class="muted">Kjo llogëri sheh çdo gjë në sistem (përdorues, grupe, dhoma, chat-e, njoftime, audit log) por nuk shfaqet askund në UI e zakonshme dhe nuk mund të ndërveprojë (dërgojë mesazhe, ndryshojë të dhëna).</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-tile"><div class="stat-num">{{ stats.total_users }}</div><div class="stat-label">Përdorues gjithsej</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.groups }}</div><div class="stat-label">Grupe</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.chat_rooms }}</div><div class="stat-label">Dhoma chat</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.rooms }}</div><div class="stat-label">Dhoma fjetjeje</div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Detaje</div>
+  <div class="card-row"><span>Kampistë</span><span>{{ stats.campers }}</span></div>
+  <div class="card-row"><span>Staf</span><span>{{ stats.staff }}</span></div>
+  <div class="card-row"><span>Administratorë</span><span>{{ stats.admins }}</span></div>
+  <div class="card-row" style="border-bottom:none;"><span>Njoftime gjithsej</span><span>{{ stats.announcements }}</span></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Navigimi</div>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('superuser.users') }}">Përdoruesit</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('superuser.groups') }}">Grupet</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('superuser.rooms') }}">Dhomat</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('superuser.chat_overview') }}">Të gjitha Chat-et</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('superuser.announcements') }}">Njoftimet</a>
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('superuser.reports') }}">Raportet</a>
+  <a class="btn btn-outline btn-block" href="{{ url_for('superuser.audit_log') }}">Audit Log</a>
+</div>
+{% endblock %}

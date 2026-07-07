@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block topbar %}
+<div class="top-bar" style="background:#0B1622; clip-path:none; padding-bottom:16px;">
+  <div class="app-shell"><a href="{{ url_for('superuser.dashboard') }}" style="color:#F0A93A;">← Paneli i Sistemit</a></div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Të gjitha Njoftimet</h1></div>
+{% for a in announcements %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between;">
+    <strong>{{ a.title }}</strong>
+    {% if a.is_emergency %}<span class="badge badge-coral">Urgjente</span>{% endif %}
+  </div>
+  <p style="margin:4px 0 0;">{{ a.body }}</p>
+  <div class="muted">{{ a.audience.value }} · {{ a.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+</div>
+{% else %}
+<div class="card"><p class="muted">S'ka njoftime ende.</p></div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Paneli i Stafit</h1></div>
+
+{% if my_group %}
+<div class="card">
+  <div class="card-title">Grupi Im — {{ my_group.name }}</div>
+  <div class="card-row"><span>Pikët</span><span class="badge badge-gold">{{ my_group.points }}</span></div>
+  <div class="card-row" style="border-bottom:none;"><span>Penalitetet</span><span class="badge badge-coral">{{ my_group.penalties }}</span></div>
+  {% if my_group.chat_room %}
+  <a class="btn btn-outline btn-block" style="margin-top:12px;" href="{{ url_for('chat.view_room', room_id=my_group.chat_room.id) }}">Hap chat-in e grupit</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if 'manage_points' in perms and my_group %}
+<div class="card">
+  <div class="card-title">Menaxho Pikët</div>
+  <form method="POST" action="{{ url_for('staff.manage_points', group_id=my_group.id) }}" style="display:flex; gap:8px;">
+    <input type="number" name="delta" placeholder="p.sh. +10 ose -5" required>
+    <button class="btn btn-primary" type="submit">Apliko</button>
+  </form>
+</div>
+{% endif %}
+
+{% if 'manage_penalties' in perms and my_group %}
+<div class="card">
+  <div class="card-title">Menaxho Penalitetet</div>
+  <form method="POST" action="{{ url_for('staff.manage_penalties', group_id=my_group.id) }}" style="display:flex; gap:8px;">
+    <input type="number" name="delta" placeholder="p.sh. +1" required>
+    <button class="btn btn-danger" type="submit">Apliko</button>
+  </form>
+</div>
+{% endif %}
+
+{% if 'send_announcements' in perms %}
+<div class="card">
+  <div class="card-title">Dërgo Njoftim</div>
+  <form method="POST" action="{{ url_for('staff.send_announcement') }}">
+    <label>Titulli</label>
+    <input type="text" name="title" required>
+    <label>Përmbajtja</label>
+    <textarea name="body" required></textarea>
+    <label>Audienca</label>
+    <select name="audience">
+      <option value="all">Të gjithë kampi</option>
+      <option value="group">Grupi im</option>
+      <option value="staff_only">Vetëm stafi</option>
+    </select>
+    <input type="hidden" name="target_group_id" value="{{ my_group.id if my_group else '' }}">
+    <div class="checkbox-row">
+      <input type="checkbox" name="is_emergency" id="is_emergency">
+      <label for="is_emergency">Njoftim emergjent</label>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Dërgo</button>
+  </form>
+</div>
+{% endif %}
+
+{% if 'create_polls' in perms %}
+<div class="card">
+  <div class="card-title">Krijo Pyetësor</div>
+  <form method="POST" action="{{ url_for('staff.create_poll') }}">
+    <label>Pyetja</label>
+    <input type="text" name="question" required>
+    <label>Opsioni 1</label>
+    <input type="text" name="option" required>
+    <label>Opsioni 2</label>
+    <input type="text" name="option" required>
+    <label>Opsioni 3 (opsionale)</label>
+    <input type="text" name="option">
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Krijo</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-title">Qasje të Tjera</div>
+  {% if 'manage_attendance' in perms %}
+  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('staff.attendance') }}">Menaxho Praninë</a>
+  {% endif %}
+  {% if 'view_emergency_info' in perms %}
+  <a class="btn btn-outline btn-block" href="{{ url_for('staff.emergency_info') }}">Informacion Emergjence</a>
+  {% endif %}
+</div>
+{% endblock %}

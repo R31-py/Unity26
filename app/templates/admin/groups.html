@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title"><h1>Grupet</h1></div>
+
+<div class="card">
+  <div class="card-title">Krijo Grup të Ri</div>
+  <form method="POST" action="{{ url_for('admin.create_group') }}">
+    <label>Emri</label>
+    <input type="text" name="name" required>
+    <label>Ngjyra</label>
+    <input type="color" name="color" value="#3E7C5A" style="height:44px;">
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Krijo (me chat automatik)</button>
+  </form>
+</div>
+
+{% for g in groups %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <strong>{{ g.name }}</strong>
+    <span class="badge" style="background:{{ g.color }}22; color:{{ g.color }};">{{ g.points }} pikë</span>
+  </div>
+
+  <form method="POST" action="{{ url_for('admin.set_group_leader', group_id=g.id) }}" style="margin-top:10px;">
+    <label>Drejtuesi</label>
+    <select name="leader_id" onchange="this.form.submit()">
+      <option value="">— Asnjë —</option>
+      {% for s in staff_members %}
+      <option value="{{ s.id }}" {% if g.leader_id == s.id %}selected{% endif %}>{{ s.full_name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <div class="muted" style="margin-top:10px;">Anëtarë: {{ g.members|length }}</div>
+</div>
+{% endfor %}
+
+<div class="card">
+  <div class="card-title">Kampistë të Pacaktuar</div>
+  {% for p in unassigned %}
+  <form method="POST" action="{{ url_for('admin.assign_member') }}" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+    <input type="hidden" name="profile_id" value="{{ p.id }}">
+    <span style="flex:1;">{{ p.first_name }} {{ p.last_name }}</span>
+    <select name="group_id" onchange="this.form.submit()">
+      <option value="">Zgjidh grup</option>
+      {% for g in groups %}<option value="{{ g.id }}">{{ g.name }}</option>{% endfor %}
+    </select>
+  </form>
+  {% else %}
+  <p class="muted">Të gjithë kampistët janë caktuar në grupe.</p>
+  {% endfor %}
+</div>
+{% endblock %}
