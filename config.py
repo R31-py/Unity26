@@ -30,10 +30,16 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL", f"sqlite:///{os.path.join(basedir, 'instance', 'camp_dev.db')}"
     )
-    # Render/Heroku japin URL me prefix postgres:// - SQLAlchemy 2.x kërkon postgresql://
+    # Render/Heroku japin URL me prefix postgres:// ose postgresql:// (pa drejtues).
+    # Përdorim psycopg (v3), jo psycopg2, sepse psycopg2 s'ka build të përputhshëm
+    # me versionet e reja të Python (p.sh. 3.13/3.14) te platformat si Render.
     if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
-            "postgres://", "postgresql://", 1
+            "postgres://", "postgresql+psycopg://", 1
+        )
+    elif SQLALCHEMY_DATABASE_URI.startswith("postgresql://"):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
+            "postgresql://", "postgresql+psycopg://", 1
         )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
