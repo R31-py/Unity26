@@ -1,52 +1,37 @@
 {% extends "base.html" %}
+{% block title %}Groups{% endblock %}
 {% block content %}
-<div class="page-title"><h1>Grupet</h1></div>
-
-<div class="card">
-  <div class="card-title">Krijo Grup të Ri</div>
-  <form method="POST" action="{{ url_for('admin.create_group') }}">
-    <label>Emri</label>
-    <input type="text" name="name" required>
-    <label>Ngjyra</label>
-    <input type="color" name="color" value="#3E7C5A" style="height:44px;">
-    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Krijo (me chat automatik)</button>
-  </form>
-</div>
-
-{% for g in groups %}
-<div class="card">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <strong>{{ g.name }}</strong>
-    <span class="badge" style="background:{{ g.color }}22; color:{{ g.color }};">{{ g.points }} pikë</span>
+<div class="page-head-row">
+  <div class="page-head">
+    <div class="eyebrow">Admin · Manage</div>
+    <h1>Groups</h1>
+    <p>Ranked by current points — same ranking members see on their own dashboards. Tap a card to edit it.</p>
   </div>
-
-  <form method="POST" action="{{ url_for('admin.set_group_leader', group_id=g.id) }}" style="margin-top:10px;">
-    <label>Drejtuesi</label>
-    <select name="leader_id" onchange="this.form.submit()">
-      <option value="">— Asnjë —</option>
-      {% for s in staff_members %}
-      <option value="{{ s.id }}" {% if g.leader_id == s.id %}selected{% endif %}>{{ s.full_name }}</option>
-      {% endfor %}
-    </select>
-  </form>
-
-  <div class="muted" style="margin-top:10px;">Anëtarë: {{ g.members|length }}</div>
+  <a class="btn btn-amber" href="{{ url_for('admin.group_new') }}">+ New group</a>
 </div>
-{% endfor %}
 
-<div class="card">
-  <div class="card-title">Kampistë të Pacaktuar</div>
-  {% for p in unassigned %}
-  <form method="POST" action="{{ url_for('admin.assign_member') }}" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-    <input type="hidden" name="profile_id" value="{{ p.id }}">
-    <span style="flex:1;">{{ p.first_name }} {{ p.last_name }}</span>
-    <select name="group_id" onchange="this.form.submit()">
-      <option value="">Zgjidh grup</option>
-      {% for g in groups %}<option value="{{ g.id }}">{{ g.name }}</option>{% endfor %}
-    </select>
-  </form>
+<div class="entity-grid">
+  {% for row in leaderboard %}
+  {% set g = row.group %}
+  <div class="entity-card">
+    <a class="entity-card-link" href="{{ url_for('admin.group_edit', group_id=g.group_id) }}" aria-label="Edit {{ g.name }}"></a>
+    <div class="entity-card-top">
+      <div class="entity-card-name"><span class="group-swatch" style="background:{{ g.color or '#999' }}"></span>#{{ row.rank }} · {{ g.name }}</div>
+      <div class="entity-card-sub">{{ g.users|length }} member{{ "" if g.users|length == 1 else "s" }} · {{ g.color or "no color set" }}</div>
+    </div>
+    <div class="entity-card-meta">
+      <span class="badge badge-ok">{{ g.points }} pts</span>
+      <span class="badge badge-user">{{ row.reward_count }} rewards</span>
+      <span class="badge badge-full">{{ row.penalty_count }} penalties</span>
+    </div>
+    <form class="entity-card-delete" method="POST" action="{{ url_for('admin.group_delete', group_id=g.group_id) }}"
+          onsubmit="return confirm('Delete group {{ g.name }}? Members will just be unassigned, not deleted.');">
+      {{ delete_form.hidden_tag() }}
+      <button class="entity-card-delete-btn" type="submit" aria-label="Delete {{ g.name }}">&times;</button>
+    </form>
+  </div>
   {% else %}
-  <p class="muted">Të gjithë kampistët janë caktuar në grupe.</p>
+  <div class="entity-card-empty">No groups yet.</div>
   {% endfor %}
 </div>
 {% endblock %}

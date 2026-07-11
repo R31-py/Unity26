@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Camp{% endblock %} · Camp Points</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#060d1b">
+  <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Camp Points">
+
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <script>window.VAPID_PUBLIC_KEY = {{ config.VAPID_PUBLIC_KEY | tojson }};</script>
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="carousel-page">
+  <div class="cx-bg">
+    <div class="cx-blob cx-blob-a"></div>
+    <div class="cx-blob cx-blob-b"></div>
+    <div class="cx-blob cx-blob-c"></div>
+  </div>
+
+  <div class="cx-screen">
+    <div class="cx-header">
+      <div class="cx-header-row">
+        <div class="cx-brand">
+          <span class="cx-brand-name">{% block brand_name %}Camp Points{% endblock %}</span>
+          <span class="cx-brand-tag">{% block brand_tag %}Together as one{% endblock %}</span>
+        </div>
+        <button class="cx-avatar-btn" id="cx-avatar-btn" aria-haspopup="dialog" aria-expanded="false">
+          {{ current_user.name[0] }}{{ (current_user.surname or "")[0] }}
+        </button>
+      </div>
+      {% block subheader %}{% endblock %}
+    </div>
+
+    {% block carousel_content %}{% endblock %}
+
+    <div class="cx-hint">swipe or scroll to browse &middot; tap to open</div>
+  </div>
+
+  <div class="cx-backdrop" id="cx-backdrop">
+    <div class="cx-sheet" role="dialog" aria-modal="true" aria-label="Your info">
+      <div class="cx-sheet-top">
+        <div class="cx-sheet-av">{{ current_user.name[0] }}{{ (current_user.surname or "")[0] }}</div>
+        <div>
+          <div class="cx-sheet-name">{{ current_user.full_name }}</div>
+          <div class="cx-sheet-role">{{ current_user.role_enum.name.title() }}</div>
+        </div>
+        <button class="cx-sheet-close" id="cx-sheet-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="cx-sheet-list">
+        {% if current_user.group %}
+        <a class="cx-sheet-row" href="{{ url_for('user.points_detail') if current_user.is_plain_user else url_for('staff.points_detail') }}">
+          <div class="cx-sheet-row-ic">&#11041;</div>
+          <div>
+            <div class="cx-sheet-row-label">Group</div>
+            <div class="cx-sheet-row-value">{{ current_user.group.name }}</div>
+          </div>
+          <div class="cx-sheet-row-arrow">&rarr;</div>
+        </a>
+        {% endif %}
+        {% if current_user.room %}
+        <a class="cx-sheet-row" href="{{ url_for('user.room_detail') if current_user.is_plain_user else url_for('staff.room_detail') }}">
+          <div class="cx-sheet-row-ic">&#8962;</div>
+          <div>
+            <div class="cx-sheet-row-label">Room</div>
+            <div class="cx-sheet-row-value">{{ current_user.room.building.name }} &middot; Room {{ current_user.room.number }}</div>
+          </div>
+          <div class="cx-sheet-row-arrow">&rarr;</div>
+        </a>
+        {% endif %}
+        {% if not current_user.group and not current_user.room and current_user.is_admin %}
+        <div class="cx-sheet-empty" style="font-size:13px; color:var(--cx-muted); margin-top:4px;">
+          Admin accounts aren't assigned to a group or room.
+        </div>
+        {% endif %}
+        <button type="button" class="cx-sheet-row cx-sheet-btn" id="notif-toggle-btn">
+          <div class="cx-sheet-row-ic">&#128276;</div>
+          <div>
+            <div class="cx-sheet-row-label">Notifications</div>
+            <div class="cx-sheet-row-value">Enable push notifications</div>
+          </div>
+        </button>
+        <button type="button" class="cx-sheet-row cx-sheet-btn" id="install-app-btn" hidden>
+          <div class="cx-sheet-row-ic">&#8681;</div>
+          <div>
+            <div class="cx-sheet-row-label">App</div>
+            <div class="cx-sheet-row-value">Install this app</div>
+          </div>
+        </button>
+        <a class="cx-sheet-row" href="{{ url_for('auth.logout') }}">
+          <div class="cx-sheet-row-ic">&#10140;</div>
+          <div>
+            <div class="cx-sheet-row-label">Account</div>
+            <div class="cx-sheet-row-value">Log out</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% with flash_messages = get_flashed_messages(with_categories=true) %}
+  {% if flash_messages %}
+    <div class="flashes flashes-standalone">
+      {% for category, message in flash_messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/carousel.js') }}" defer></script>
+</body>
+</html>

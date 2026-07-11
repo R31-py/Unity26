@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}New message request{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Staff · Requests</div>
+  <h1>Propose a message</h1>
+  <p>This is sent to Admin for approval — it won't appear on anyone's dashboard until then.</p>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.title.label }}
+      {{ form.title(type="text") }}
+      {% for e in form.title.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.content.label }}
+      {{ form.content(rows=5) }}
+      {% for e in form.content.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.target_group_id.label }}
+      {{ form.target_group_id() }}
+      <div class="hint">"Everyone" broadcasts to all Users and Staff; picking a group scopes it to that group's members only.</div>
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('staff.requests_list') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

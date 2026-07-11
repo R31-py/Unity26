@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit message" if mode == "edit" else "New message" }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>{{ "Edit " + message.title if mode == "edit" else "New message" }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.title.label }}
+      {{ form.title(type="text") }}
+      {% for e in form.title.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.content.label }}
+      {{ form.content(rows=5) }}
+      {% for e in form.content.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.target_group_id.label }}
+      {{ form.target_group_id() }}
+      <div class="hint">"Everyone" broadcasts to all Users and Staff; picking a group scopes it to that group's members only.</div>
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('admin.messages') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

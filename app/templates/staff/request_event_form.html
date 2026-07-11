@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}New event request{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Staff · Requests</div>
+  <h1>Propose an event</h1>
+  <p>This is sent to Admin for approval — it won't appear on the schedule until then.</p>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.name.label }}
+      {{ form.name(type="text") }}
+      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.description.label }}
+      {{ form.description(rows=3) }}
+    </div>
+    <div class="field">
+      {{ form.time.label }}
+      {{ form.time() }}
+      {% for e in form.time.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('staff.requests_list') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Requests{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>Requests</h1>
+  <p>Staff submissions awaiting review. Approving applies the change immediately; rejecting discards it.</p>
+</div>
+
+<div class="schedule-nav" style="justify-content:flex-start; gap:8px;">
+  <a class="btn btn-sm {{ 'btn-amber' if status_filter == 'pending' else 'btn-outline' }}" href="{{ url_for('admin.requests_list', status='pending') }}">
+    Pending{% if pending_count %} ({{ pending_count }}){% endif %}
+  </a>
+  <a class="btn btn-sm {{ 'btn-amber' if status_filter == 'approved' else 'btn-outline' }}" href="{{ url_for('admin.requests_list', status='approved') }}">Approved</a>
+  <a class="btn btn-sm {{ 'btn-amber' if status_filter == 'rejected' else 'btn-outline' }}" href="{{ url_for('admin.requests_list', status='rejected') }}">Rejected</a>
+  <a class="btn btn-sm {{ 'btn-amber' if status_filter == 'all' else 'btn-outline' }}" href="{{ url_for('admin.requests_list', status='all') }}">All</a>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>From</th>
+        <th>Details</th>
+        <th>Submitted</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in requests %}
+      <tr>
+        <td>
+          {% if r.target_type == "message" %}Message
+          {% elif r.target_type == "group_event" %}Points/Penalty
+          {% elif r.target_type == "event" %}Event
+          {% else %}{{ r.target_type }}{% endif %}
+        </td>
+        <td>{{ r.submitted_by.full_name if r.submitted_by else "—" }}</td>
+        <td>
+          {% if r.target_type == "message" %}
+            <strong>{{ r.payload.get("title") }}</strong>
+            <div class="muted">{{ r.payload.get("content") }}</div>
+            <div class="muted" style="font-size:12px;">
+              {% if r.payload.get("target_group_id") %}Scoped to one group{% else %}Everyone (broadcast){% endif %}
+            </div>
+          {% elif r.target_type == "group_event" %}
+            <strong>{{ r.payload.get("name") }}</strong>
+            <div class="muted">
+              {{ "+" if r.payload.get("type") == 1 else "-" }}{{ r.payload.get("value") }}
+              {% if r.payload.get("description") %} — {{ r.payload.get("description") }}{% endif %}
+            </div>
+          {% elif r.target_type == "event" %}
+            <strong>{{ r.payload.get("name") }}</strong>
+            <div class="muted">{{ r.payload.get("time") }}</div>
+            {% if r.payload.get("description") %}<div class="muted" style="font-size:12px;">{{ r.payload.get("description") }}</div>{% endif %}
+          {% endif %}
+        </td>
+        <td class="muted">{{ r.created_at.strftime("%b %d, %H:%M") }}</td>
+        <td>
+          {% if r.status == "pending" %}
+            <span class="badge badge-pending">Pending</span>
+          {% elif r.status == "approved" %}
+            <span class="badge badge-ok">Approved</span>
+          {% else %}
+            <span class="badge badge-full">Rejected</span>
+          {% endif %}
+        </td>
+        <td class="actions">
+          {% if r.status == "pending" %}
+            <form class="inline-form" method="POST" action="{{ url_for('admin.request_approve', request_id=r.request_id) }}"
+                  onsubmit="return confirm('Approve and apply this request?');">
+              {{ approve_form.hidden_tag() }}
+              <button class="btn btn-amber btn-sm" type="submit">Approve</button>
+            </form>
+            <details class="reject-details">
+              <summary class="btn btn-outline btn-sm">Reject…</summary>
+              <form class="reject-form" method="POST" action="{{ url_for('admin.request_reject', request_id=r.request_id) }}">
+                {{ reject_form.hidden_tag() }}
+                {{ reject_form.reason(rows=2, placeholder="Optional reason for Staff") }}
+                <button class="btn btn-danger btn-sm" type="submit">Confirm reject</button>
+              </form>
+            </details>
+          {% else %}
+            <span class="muted">
+              {{ r.reviewed_by.full_name if r.reviewed_by else "—" }}
+              {% if r.reviewed_at %}· {{ r.reviewed_at.strftime("%b %d, %H:%M") }}{% endif %}
+            </span>
+            {% if r.status == "rejected" and r.review_reason %}
+              <div class="muted" style="font-size:12px;">{{ r.review_reason }}</div>
+            {% endif %}
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="6">No requests here.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

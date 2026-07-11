@@ -1,0 +1,14 @@
+{% macro item(icon, label, href, eyebrow, title, unread=false, initial_focus=false) %}
+<div class="cx-item"{% if initial_focus %} data-initial-focus="true"{% endif %}>
+  <div class="cx-chip">
+    <span class="cx-chip-icon" aria-hidden="true">{{ icon }}</span>
+    <span class="cx-chip-label">{{ label }}</span>
+    {% if unread %}<span class="cx-unread-dot" aria-label="New"></span>{% endif %}
+  </div>
+  <a class="cx-card" href="{{ href }}">
+    <div class="cx-card-eyebrow">{{ eyebrow }}</div>
+    <div class="cx-card-title">{{ title }}</div>
+    {{ caller() }}
+  </a>
+</div>
+{% endmacro %}

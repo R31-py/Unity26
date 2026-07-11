@@ -1,61 +1,40 @@
 {% extends "base.html" %}
+{% block title %}Users{% endblock %}
 {% block content %}
-<div class="page-title"><h1>Përdoruesit</h1></div>
-
-<div class="card" style="display:flex; gap:8px; flex-wrap:wrap;">
-  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users') }}">Të gjithë</a>
-  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users', role='kampist') }}">Kampistë</a>
-  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users', role='staff') }}">Staf</a>
-  <a class="btn btn-outline btn-sm" href="{{ url_for('admin.users', role='admin') }}">Administratorë</a>
+<div class="page-head-row">
+  <div class="page-head">
+    <div class="eyebrow">Admin · Manage</div>
+    <h1>Users</h1>
+    <p>Every account is provisioned here — there's no self-registration. Tap a card to edit it.</p>
+  </div>
+  <a class="btn btn-amber" href="{{ url_for('admin.user_new') }}">+ New user</a>
 </div>
 
-{% for u in users %}
-<div class="card">
-  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-    <div>
-      <strong>{{ u.full_name }}</strong>
-      <div class="muted">{{ u.email }}{% if u.phone %} · {{ u.phone }}{% endif %}</div>
+<div class="entity-grid">
+  {% for u in users %}
+  <div class="entity-card">
+    <a class="entity-card-link" href="{{ url_for('admin.user_edit', user_id=u.user_id) }}" aria-label="Edit {{ u.full_name }}"></a>
+    <div class="entity-card-top">
+      <div class="entity-card-name">{{ u.full_name }}</div>
+      <div class="entity-card-sub">@{{ u.username }}</div>
     </div>
-    <span class="badge badge-sky">{{ u.role.value }}</span>
-  </div>
-
-  {% if not u.is_active_account %}<span class="badge badge-coral">Joaktiv</span>{% endif %}
-
-  {% if u.camper_profile %}
-  <div class="muted" style="margin-top:6px;">
-    Grup: {{ u.camper_profile.group.name if u.camper_profile.group else '—' }} ·
-    Dhomë: {{ u.camper_profile.room.number if u.camper_profile.room else '—' }}
-  </div>
-  {% endif %}
-
-  <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-    {% if u.role.value == 'kampist' %}
-    <form method="POST" action="{{ url_for('admin.make_staff', user_id=u.id) }}">
-      <button class="btn btn-outline btn-sm" type="submit">Bëje staf</button>
-    </form>
-    {% endif %}
-    <form method="POST" action="{{ url_for('admin.toggle_active', user_id=u.id) }}">
-      <button class="btn btn-outline btn-sm" type="submit">
-        {{ 'Çaktivizo' if u.is_active_account else 'Aktivizo' }}
-      </button>
+    <div class="entity-card-meta">
+      <span class="badge badge-{{ u.role_enum.name.lower() }}">{{ u.role_enum.name.title() }}</span>
+      {% if u.group %}
+        <span class="badge badge-user"><span class="group-swatch" style="background:{{ u.group.color or '#999' }}"></span>{{ u.group.name }}</span>
+      {% endif %}
+      {% if u.room %}
+        <span class="badge badge-user">{{ u.room.building.name }} · {{ u.room.number }}</span>
+      {% endif %}
+    </div>
+    <form class="entity-card-delete" method="POST" action="{{ url_for('admin.user_delete', user_id=u.user_id) }}"
+          onsubmit="return confirm('Delete {{ u.full_name }}? This cannot be undone.');">
+      {{ delete_form.hidden_tag() }}
+      <button class="entity-card-delete-btn" type="submit" aria-label="Delete {{ u.full_name }}">&times;</button>
     </form>
   </div>
-
-  {% if u.role.value == 'staff' %}
-  <form method="POST" action="{{ url_for('admin.update_permissions', user_id=u.id) }}" style="margin-top:10px; border-top:1px solid var(--line); padding-top:10px;">
-    <div class="card-title" style="font-size:.85rem;">Lejet</div>
-    {% set granted = u.staff_permissions|map(attribute='permission')|map(attribute='value')|list %}
-    {% for perm in all_permissions %}
-    <label class="checkbox-row">
-      <input type="checkbox" name="permissions" value="{{ perm.value }}" {% if perm.value in granted %}checked{% endif %}>
-      {{ perm.value.replace('_',' ')|capitalize }}
-    </label>
-    {% endfor %}
-    <button class="btn btn-primary btn-sm" type="submit" style="margin-top:8px;">Ruaj lejet</button>
-  </form>
-  {% endif %}
+  {% else %}
+  <div class="entity-card-empty">No users yet — create the first Staff or User account.</div>
+  {% endfor %}
 </div>
-{% else %}
-<div class="card"><p class="muted">S'ka përdorues në këtë kategori.</p></div>
-{% endfor %}
 {% endblock %}

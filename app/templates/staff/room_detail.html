@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Room{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-outline btn-sm" href="{{ url_for('staff.dashboard') }}">&larr; Back</a>
+  <div class="eyebrow" style="margin-top:14px;">{{ room.room.building.name if room else "Not yet assigned" }}</div>
+  <h1>Room &amp; Roommates</h1>
+</div>
+
+{% if room %}
+<div class="card-grid">
+  <div class="stat-card">
+    <div class="num">{{ room.room.number }}</div>
+    <div class="label">{{ room.room.building.name }}</div>
+  </div>
+</div>
+<div class="table-card">
+  <table class="data-table">
+    <thead><tr><th>Roommate</th><th>Group</th></tr></thead>
+    <tbody>
+      {% for rm in room.roommates %}
+      <tr>
+        <td>{{ rm.full_name }}</td>
+        <td>
+          {% if rm.group %}
+            <span class="group-swatch" style="background:{{ rm.group.color or '#999' }}"></span>{{ rm.group.name }}
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="2">You have this room to yourself right now.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="placeholder-card">
+  <h3>Not yet assigned</h3>
+  <p>You haven't been assigned a room yet — ask an Admin.</p>
+</div>
+{% endif %}
+{% endblock %}

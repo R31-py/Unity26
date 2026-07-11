@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+{% block content %}
+<div class="page-head-row">
+  <div class="page-head">
+    <div class="eyebrow">Admin · Manage</div>
+    <h1>Messages</h1>
+    <p>Broadcast to everyone, or scope a message to one group.</p>
+  </div>
+  <a class="btn btn-amber" href="{{ url_for('admin.message_new') }}">+ New message</a>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr><th>Title</th><th>Audience</th><th>Posted</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for m in messages %}
+      <tr>
+        <td>{{ m.title }}</td>
+        <td>
+          {% if m.target_group %}
+            <span class="group-swatch" style="background:{{ m.target_group.color or '#999' }}"></span>{{ m.target_group.name }}
+          {% else %}
+            <span class="badge badge-ok">Everyone</span>
+          {% endif %}
+        </td>
+        <td class="muted">{{ m.time.strftime("%b %d, %H:%M") }}</td>
+        <td class="actions">
+          <a class="btn btn-outline btn-sm" href="{{ url_for('admin.message_edit', message_id=m.message_id) }}">Edit</a>
+          <form class="inline-form" method="POST" action="{{ url_for('admin.message_delete', message_id=m.message_id) }}"
+                onsubmit="return confirm('Delete this message?');">
+            {{ delete_form.hidden_tag() }}
+            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="4">No messages posted yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

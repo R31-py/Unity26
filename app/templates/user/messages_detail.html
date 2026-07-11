@@ -1,0 +1,38 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Messages{% endblock %}
+
+{% block subheader %}
+<div class="cx-back-row">
+  <a class="cx-back-link" href="{{ url_for('user.dashboard') }}">&larr; Back</a>
+</div>
+{% endblock %}
+
+{% block carousel_content %}
+<div class="cx-carousel-wrap" id="carouselWrap" tabindex="0" aria-label="Messages, use arrow keys to move">
+  <div class="cx-rail"></div>
+  <div class="cx-track js-pending" id="track">
+    {% for m in messages %}
+    <div class="cx-item"{% if loop.first %} data-initial-focus="true"{% endif %}>
+      <div class="cx-chip">
+        <span class="cx-chip-icon" aria-hidden="true">&#10022;</span>
+        <span class="cx-chip-label">{{ m.title }}</span>
+      </div>
+      <div class="cx-card">
+        <div class="cx-card-eyebrow">
+          {% if m.target_group %}{{ m.target_group.name }}{% else %}Everyone{% endif %}
+          &middot; {{ m.time.strftime("%b %d, %H:%M") }}
+        </div>
+        <div class="cx-card-title">{{ m.title }}</div>
+        <div class="cx-card-body">{{ m.content }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% if not messages %}
+<div class="cx-card" style="margin: 0 22px;">
+  <div class="cx-card-title">No messages yet</div>
+  <div class="cx-card-body">Announcements from Admin will show up here.</div>
+</div>
+{% endif %}
+{% endblock %}

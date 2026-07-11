@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<div class="page-head-row">
+  <div class="page-head">
+    <div class="eyebrow">Admin · Manage</div>
+    <h1>Events</h1>
+    <p>These populate the weekly schedule on every dashboard. Push
+      reminders go out 20 minutes before each starts, and again at start
+      time (spec §4) — in production that's driven by Vercel Cron; use the
+      button below to trigger the same check on demand.</p>
+  </div>
+  <div class="page-head-actions">
+    <form method="POST" action="{{ url_for('admin.event_run_reminder_check') }}">
+      {{ delete_form.hidden_tag() }}
+      <button class="btn btn-outline" type="submit">Run reminder check now</button>
+    </form>
+    <a class="btn btn-amber" href="{{ url_for('admin.event_new') }}">+ New event</a>
+  </div>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr><th>Name</th><th>Description</th><th>Date &amp; time</th><th>Reminders</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for e in events %}
+      <tr>
+        <td>{{ e.name }}</td>
+        <td class="muted">{{ e.description or "—" }}</td>
+        <td>{{ e.time.strftime("%a, %b %d · %H:%M") if e.time else "—" }}</td>
+        <td>
+          {% if e.sent_20min_at %}<span class="badge badge-ok" title="{{ e.sent_20min_at }}">20-min sent</span>{% endif %}
+          {% if e.sent_start_at %}<span class="badge badge-ok" title="{{ e.sent_start_at }}">Start sent</span>{% endif %}
+          {% if not e.sent_20min_at and not e.sent_start_at %}<span class="muted">—</span>{% endif %}
+        </td>
+        <td class="actions">
+          <a class="btn btn-outline btn-sm" href="{{ url_for('admin.event_edit', event_id=e.event_id) }}">Edit</a>
+          <form class="inline-form" method="POST" action="{{ url_for('admin.event_delete', event_id=e.event_id) }}"
+                onsubmit="return confirm('Remove {{ e.name }} from the schedule?');">
+            {{ delete_form.hidden_tag() }}
+            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="5">No events scheduled yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

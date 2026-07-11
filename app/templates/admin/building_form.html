@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit building" if mode == "edit" else "New building" }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>{{ "Edit " + building.name if mode == "edit" else "New building" }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.name.label }}
+      {{ form.name(type="text") }}
+      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('admin.rooms') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

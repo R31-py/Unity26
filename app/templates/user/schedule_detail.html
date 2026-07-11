@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Schedule{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-outline btn-sm" href="{{ url_for('user.dashboard') }}">&larr; Back</a>
+  <h1 style="margin-top:14px;">Schedule</h1>
+</div>
+
+<div class="schedule-nav">
+  <a class="btn btn-outline btn-sm" href="?week={{ schedule.week_offset - 1 }}">&larr; Prev week</a>
+  <span class="week-label">
+    {{ schedule.week_start.strftime("%b %d") }} - {{ schedule.week_end.strftime("%b %d, %Y") }}
+    {% if schedule.is_current_week %}<span class="badge badge-ok">This week</span>{% endif %}
+  </span>
+  <a class="btn btn-outline btn-sm" href="?week={{ schedule.week_offset + 1 }}">Next week &rarr;</a>
+</div>
+<div class="schedule-grid">
+  {% for day in schedule.days %}
+  <div class="schedule-day{% if day.is_today %} is-today{% endif %}">
+    <div class="schedule-day-head">{{ day.date.strftime("%a, %b %d") }}</div>
+    {% for item in day.events %}
+    <div class="schedule-event status-{{ item.status }}">
+      <span class="ev-time">{{ item.event.time.strftime("%H:%M") }}</span>
+      <span class="ev-name">{{ item.event.name }}</span>
+    </div>
+    {% else %}
+    <div class="schedule-empty">No events</div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

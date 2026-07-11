@@ -1,9 +1,15 @@
 {% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block bare_content %}
+<div class="error-page">
+  <div class="code">404</div>
+  <h1>Page not found</h1>
+  <a href="{{ url_for('auth.login') }}">Back to login</a>
+</div>
+{% endblock %}
 {% block content %}
-<div class="card" style="text-align:center; margin-top:40px;">
-  <div style="font-size:2.4rem;">🦅</div>
-  <h2>404 — Nuk u gjet</h2>
-  <p>Faqja që kërkove nuk ekziston.</p>
-  <a class="btn btn-primary" href="{{ url_for('home') }}">Kthehu në fillim</a>
+<div class="error-page">
+  <div class="code">404</div>
+  <h1>Page not found</h1>
 </div>
 {% endblock %}

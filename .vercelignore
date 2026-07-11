@@ -1,0 +1,13 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+instance/
+.env
+.env.example
+.git/
+.gitignore
+*.db
+README.md
+generate_vapid_keys.py
+sync_static.py

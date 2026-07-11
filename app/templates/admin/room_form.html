@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit room" if mode == "edit" else "New room" }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>{{ "Edit room " + room.number if mode == "edit" else "New room" }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.building_id.label }}
+      {{ form.building_id() }}
+    </div>
+    <div class="field">
+      {{ form.number.label }}
+      {{ form.number(type="text") }}
+      {% for e in form.number.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.capacity.label }}
+      {{ form.capacity(type="number", min=1, max=50) }}
+      {% if mode == "edit" %}
+        <div class="hint">Currently {{ room.occupant_count }} occupant(s) — capacity can't go below that.</div>
+      {% endif %}
+      {% for e in form.capacity.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('admin.rooms') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

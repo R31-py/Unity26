@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit user" if mode == "edit" else "New user" }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>{{ "Edit " + user.full_name if mode == "edit" else "New user" }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.name.label }}
+      {{ form.name(type="text") }}
+      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.surname.label }}
+      {{ form.surname(type="text") }}
+    </div>
+    <div class="field">
+      {{ form.username.label }}
+      {{ form.username(type="text", autocomplete="off") }}
+      {% for e in form.username.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.password.label }}
+      {{ form.password(type="password", autocomplete="new-password") }}
+      {% if mode == "edit" %}
+        <div class="hint">Leave blank to keep the current password.</div>
+      {% endif %}
+      {% for e in form.password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.role.label }}
+      {{ form.role() }}
+      {% for e in form.role.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.group_id.label }}
+      {{ form.group_id() }}
+      {% for e in form.group_id.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.room_id.label }}
+      {{ form.room_id() }}
+      <div class="hint">Full rooms are hidden unless it's this user's current room.</div>
+      {% for e in form.room_id.errors %}
+        <div class="field-error">
+          {{ "That room just filled up or is no longer available — pick another." if "choice" in e else e }}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('admin.users') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

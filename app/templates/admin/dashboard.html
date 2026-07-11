@@ -1,39 +1,61 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="page-title"><h1>Paneli i Administratorit</h1></div>
+{% extends "dashboard_base.html" %}
+{% import "_carousel_macros.html" as cx %}
+{% block title %}Admin Overview{% endblock %}
+{% block brand_tag %}Admin console{% endblock %}
 
-<div class="stat-grid">
-  <div class="stat-tile"><div class="stat-num">{{ stats.total_campers }}</div><div class="stat-label">Kampistë</div></div>
-  <div class="stat-tile"><div class="stat-num">{{ stats.total_staff }}</div><div class="stat-label">Staf</div></div>
-  <div class="stat-tile"><div class="stat-num">{{ stats.total_groups }}</div><div class="stat-label">Grupe</div></div>
-  <div class="stat-tile"><div class="stat-num">{{ stats.total_rooms }}</div><div class="stat-label">Dhoma</div></div>
-</div>
+{% block carousel_content %}
+<div class="cx-carousel-wrap" id="carouselWrap" tabindex="0" aria-label="Dashboard sections, use arrow keys to move">
+  <div class="cx-rail"></div>
+  <div class="cx-track js-pending" id="track">
 
-{% if stats.unassigned_campers %}
-<div class="card" style="margin-top:14px;">
-  <span class="badge badge-coral">Vëmendje</span>
-  <p>{{ stats.unassigned_campers }} kampistë ende s'janë caktuar në asnjë grup.</p>
-  <a class="btn btn-outline" href="{{ url_for('admin.groups') }}">Cakto grupet</a>
-</div>
-{% endif %}
+    {% call cx.item("&#9678;", "Users", url_for('admin.users'), "Accounts",
+                    stats.user_count|string ~ " accounts", initial_focus=true) %}
+      <div class="cx-card-sub">{{ stats.staff_count }} staff &middot; {{ stats.camper_count }} campers</div>
+      <div class="cx-card-cta">Manage users &rarr;</div>
+    {% endcall %}
 
-<div class="card">
-  <div class="card-title">Aktiviteti i Fundit (Audit Log)</div>
-  {% for log in recent_logs %}
-  <div class="card-row">
-    <span>{{ log.action }}</span>
-    <span class="muted">{{ log.created_at.strftime('%d/%m %H:%M') }}</span>
+    {% call cx.item("&#11041;", "Groups", url_for('admin.groups'), "Groups",
+                    stats.group_count|string ~ " groups") %}
+      <div class="cx-card-cta">Manage groups &amp; ranks &rarr;</div>
+    {% endcall %}
+
+    {% call cx.item("&#8962;", "Rooms", url_for('admin.rooms'), "Buildings",
+                    stats.room_count|string ~ " rooms") %}
+      <div class="cx-card-sub">{{ stats.full_room_count }} at full capacity</div>
+      <div class="cx-card-cta">Manage rooms &rarr;</div>
+    {% endcall %}
+
+    {% call cx.item("&#11041;", "Points", url_for('admin.points'), "This week",
+                    stats.point_entry_count|string ~ " entries") %}
+      <div class="cx-card-cta">Manage points &amp; penalties &rarr;</div>
+    {% endcall %}
+
+    {% call cx.item("&#10022;", "Messages", url_for('admin.messages'), "Sent",
+                    stats.message_count|string ~ " messages") %}
+      <div class="cx-card-cta">Manage messages &rarr;</div>
+    {% endcall %}
+
+    {% call cx.item("&#9711;", "Events", url_for('admin.events'), "Next up",
+                    stats.next_event.name if stats.next_event else "No events yet") %}
+      {% if stats.next_event %}
+        <div class="cx-mono-time">{{ stats.next_event.time.strftime("%d %b &middot; %H:%M")|safe }}</div>
+      {% endif %}
+      <div class="cx-card-cta">Manage events &rarr;</div>
+    {% endcall %}
+
+    {% call cx.item("&#9670;", "Requests", url_for('admin.requests_list'), "Awaiting review",
+                    (stats.pending_requests|string ~ " pending") if stats.pending_requests else "All caught up",
+                    unread=stats.pending_requests > 0) %}
+      {% if stats.pending_requests %}
+        <div class="cx-row-chips">
+          {% for target_type, count in stats.pending_by_type.items() %}
+            <span class="cx-pill neg">{{ count }} {{ target_type.replace('_', ' ') }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <div class="cx-card-cta">Review requests &rarr;</div>
+    {% endcall %}
+
   </div>
-  {% else %}
-  <p class="muted">S'ka aktivitet ende.</p>
-  {% endfor %}
-</div>
-
-<div class="card">
-  <div class="card-title">Qasje të Shpejta</div>
-  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('admin.announcements') }}">Njoftimet</a>
-  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('admin.schedule') }}">Orari</a>
-  <a class="btn btn-outline btn-block" style="margin-bottom:8px;" href="{{ url_for('admin.settings') }}">Cilësimet</a>
-  <a class="btn btn-outline btn-block" href="{{ url_for('admin.reports') }}">Raportet</a>
 </div>
 {% endblock %}

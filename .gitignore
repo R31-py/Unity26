@@ -1,11 +1,7 @@
 __pycache__/
 *.pyc
-.env
-instance/
-app/static/uploads/*
-!app/static/uploads/.gitkeep
 venv/
 .venv/
-*.db
-.DS_Store
-migrations/versions/__pycache__/
+instance/
+.env
+.vercel/

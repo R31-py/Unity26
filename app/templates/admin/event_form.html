@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit event" if mode == "edit" else "New event" }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>{{ "Edit " + event.name if mode == "edit" else "New event" }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.name.label }}
+      {{ form.name(type="text") }}
+      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.description.label }}
+      {{ form.description(rows=3) }}
+    </div>
+    <div class="field">
+      {{ form.time.label }}
+      {{ form.time() }}
+      {% for e in form.time.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('admin.events') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

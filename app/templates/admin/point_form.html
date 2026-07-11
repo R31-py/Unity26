@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit entry" if mode == "edit" else "New entry" }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Admin · Manage</div>
+  <h1>{{ "Edit " + event.name if mode == "edit" else "New points / penalty entry" }}</h1>
+</div>
+
+<div class="form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="field">
+      {{ form.group_id.label }}
+      {{ form.group_id() }}
+    </div>
+    <div class="field">
+      {{ form.user_id.label }}
+      {{ form.user_id() }}
+      <div class="hint">Leave as "—" to apply this to the whole group. Otherwise pick a member of the group selected above.</div>
+      {% for e in form.user_id.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.type.label }}
+      {{ form.type() }}
+    </div>
+    <div class="field">
+      {{ form.name.label }}
+      {{ form.name(type="text") }}
+      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="field">
+      {{ form.description.label }}
+      {{ form.description(rows=3) }}
+      <div class="hint">The reason for this point or penalty — shown to the group/member.</div>
+    </div>
+    <div class="field">
+      {{ form.value.label }}
+      {{ form.value(type="number", min=1) }}
+      {% for e in form.value.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-amber") }}
+      <a class="btn btn-outline" href="{{ url_for('admin.points') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

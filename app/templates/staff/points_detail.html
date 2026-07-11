@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Points{% endblock %}
+{% block content %}
+<div class="page-head">
+  <a class="btn btn-outline btn-sm" href="{{ url_for('staff.dashboard') }}">&larr; Back</a>
+  <div class="eyebrow" style="margin-top:14px;">{{ points.group.name if points else "No group" }}</div>
+  <h1>Points &amp; Penalties</h1>
+  <p>Your group's full ledger, and how every group currently ranks.</p>
+</div>
+
+{% if points %}
+<div class="card-grid">
+  <div class="stat-card">
+    <div class="num">{{ points.total }}</div>
+    <div class="label">{{ points.group.name }} total</div>
+  </div>
+</div>
+
+<div class="section-title">Ledger</div>
+<div class="table-card">
+  <table class="data-table">
+    <thead><tr><th>Type</th><th>Name</th><th>Description</th><th>Value</th><th>For</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for e in points.events %}
+      <tr>
+        <td>
+          {% if e.type == 1 %}<span class="badge badge-ok">Reward</span>
+          {% else %}<span class="badge badge-full">Penalty</span>{% endif %}
+        </td>
+        <td>{{ e.name }}</td>
+        <td class="muted">{{ e.description or "—" }}</td>
+        <td>{{ "+" if e.type == 1 else "-" }}{{ e.value }}</td>
+        <td>
+          {% if e.user %}{{ e.user.full_name }}
+          {% else %}<span class="muted">Whole group</span>{% endif %}
+        </td>
+        <td class="muted">{{ e.created_at.strftime("%b %d, %H:%M") }}</td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="6">No points or penalties recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="placeholder-card">
+  <h3>No group yet</h3>
+  <p>You haven't been assigned to a group — ask an Admin.</p>
+</div>
+{% endif %}
+
+<div class="section-title">Current Group Ranks</div>
+<div class="table-card">
+  <table class="data-table">
+    <thead><tr><th>Rank</th><th>Group</th><th>Points</th><th>Rewards</th><th>Penalties</th></tr></thead>
+    <tbody>
+      {% for row in leaderboard %}
+      <tr{% if row.is_mine %} class="highlight-row"{% endif %}>
+        <td>#{{ row.rank }}</td>
+        <td><span class="group-swatch" style="background:{{ row.group.color or '#999' }}"></span>{{ row.group.name }}{% if row.is_mine %} <span class="badge badge-ok">You</span>{% endif %}</td>
+        <td>{{ row.group.points }}</td>
+        <td class="muted">{{ row.reward_count }}</td>
+        <td class="muted">{{ row.penalty_count }}</td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="5">No groups exist yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

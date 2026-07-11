@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Points & Penalties{% endblock %}
+{% block content %}
+<div class="page-head-row">
+  <div class="page-head">
+    <div class="eyebrow">Admin · Manage</div>
+    <h1>Points &amp; Penalties</h1>
+    <p>Every entry here updates that group's running total, shown on the Groups page and on member dashboards.</p>
+  </div>
+  <a class="btn btn-amber" href="{{ url_for('admin.point_new') }}">+ New entry</a>
+</div>
+
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Group</th>
+        <th>Attributed to</th>
+        <th>Value</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in events %}
+      <tr>
+        <td>
+          {% if e.type == 1 %}
+            <span class="badge badge-ok">Point</span>
+          {% else %}
+            <span class="badge badge-full">Penalty</span>
+          {% endif %}
+        </td>
+        <td>{{ e.name }}</td>
+        <td>
+          {% if e.group %}
+            <span class="group-swatch" style="background:{{ e.group.color or '#999' }}"></span>{{ e.group.name }}
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if e.user %}
+            {{ e.user.full_name }}
+          {% else %}
+            <span class="muted">Whole group</span>
+          {% endif %}
+        </td>
+        <td>{{ "+" if e.type == 1 else "-" }}{{ e.value }}</td>
+        <td class="muted">{{ e.created_at.strftime("%b %d, %H:%M") }}</td>
+        <td class="actions">
+          <a class="btn btn-outline btn-sm" href="{{ url_for('admin.point_edit', group_event_id=e.group_event_id) }}">Edit</a>
+          <form class="inline-form" method="POST" action="{{ url_for('admin.point_delete', group_event_id=e.group_event_id) }}"
+                onsubmit="return confirm('Delete this entry? The group total will be recalculated.');">
+            {{ delete_form.hidden_tag() }}
+            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="7">No points or penalties recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

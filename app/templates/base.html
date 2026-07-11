@@ -1,86 +1,167 @@
-<!doctype html>
-<html lang="sq">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<title>{% block title %}{{ CAMP_NAME }}{% endblock %}</title>
-<meta name="description" content="{{ CAMP_SLOGAN }} — Aplikacioni zyrtar i {{ CAMP_NAME }}.">
-<meta name="theme-color" content="#10233B">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Camp{% endblock %} · Camp Points</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-<link rel="manifest" href="{{ url_for('manifest') }}">
-<link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Unity Camp">
+  <!-- PWA: installability (spec §7, Stage 7) -->
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#0b1830">
+  <link rel="icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Camp Points">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-{% block extra_head %}{% endblock %}
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <script>window.VAPID_PUBLIC_KEY = {{ config.VAPID_PUBLIC_KEY | tojson }};</script>
+
+  {% block head %}{% endblock %}
 </head>
 <body>
+  {% if current_user.is_authenticated %}
+  <div class="carousel-page page-shell">
+    <div class="cx-bg">
+      <div class="cx-blob cx-blob-a"></div>
+      <div class="cx-blob cx-blob-b"></div>
+      <div class="cx-blob cx-blob-c"></div>
+    </div>
 
-{% block topbar %}
-<div class="top-bar">
-  <div class="app-shell top-bar-row">
-    <div class="brand">
-      <div class="brand-badge">YS</div>
-      <div>
-        <div class="brand-name">{{ CAMP_NAME }}</div>
-        <div class="brand-slogan">{{ CAMP_SLOGAN }}</div>
+    <div class="cx-screen page-screen">
+      <div class="cx-header">
+        <div class="cx-header-row">
+          <div class="cx-brand">
+            <span class="cx-brand-name">Camp Points</span>
+            <span class="cx-brand-tag">{% block brand_tag %}{{ current_user.role_enum.name.title() }}{% endblock %}</span>
+          </div>
+          <button class="cx-avatar-btn" id="cx-avatar-btn" aria-haspopup="dialog" aria-expanded="false">
+            {{ current_user.name[0] }}{{ (current_user.surname or "")[0] }}
+          </button>
+        </div>
+      </div>
+
+      {# ---- Section tabs: replaces the old sidebar. A small, horizontally
+         swipeable strip of the same section chips used on the Overview
+         carousel, so every page keeps the same "carousel" navigation
+         language without a hamburger menu. ---- #}
+      <nav class="section-tabs" aria-label="Sections">
+        {% if current_user.is_admin %}
+          <a class="section-tab{% if request.endpoint == 'admin.dashboard' %} active{% endif %}" href="{{ url_for('admin.dashboard') }}"><span aria-hidden="true">&#9670;</span> Overview</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and request.endpoint.startswith('admin.user') %} active{% endif %}" href="{{ url_for('admin.users') }}"><span aria-hidden="true">&#9678;</span> Users</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and request.endpoint.startswith('admin.group') %} active{% endif %}" href="{{ url_for('admin.groups') }}"><span aria-hidden="true">&#11041;</span> Groups</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and (request.endpoint.startswith('admin.room') or request.endpoint.startswith('admin.building')) %} active{% endif %}" href="{{ url_for('admin.rooms') }}"><span aria-hidden="true">&#8962;</span> Rooms</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and request.endpoint.startswith('admin.point') %} active{% endif %}" href="{{ url_for('admin.points') }}"><span aria-hidden="true">&#11045;</span> Points</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and request.endpoint.startswith('admin.message') %} active{% endif %}" href="{{ url_for('admin.messages') }}"><span aria-hidden="true">&#10022;</span> Messages</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and request.endpoint.startswith('admin.event') %} active{% endif %}" href="{{ url_for('admin.events') }}"><span aria-hidden="true">&#9711;</span> Events</a>
+          <a class="section-tab{% if request.blueprint == 'admin' and request.endpoint.startswith('admin.request') %} active{% endif %}" href="{{ url_for('admin.requests_list') }}">
+            <span aria-hidden="true">&#9670;</span> Requests{% if pending_requests_count %}<span class="section-tab-badge">{{ pending_requests_count }}</span>{% endif %}
+          </a>
+        {% elif current_user.is_staff %}
+          <a class="section-tab{% if request.endpoint == 'staff.dashboard' %} active{% endif %}" href="{{ url_for('staff.dashboard') }}"><span aria-hidden="true">&#9670;</span> Overview</a>
+          <a class="section-tab{% if request.endpoint == 'staff.points_detail' %} active{% endif %}" href="{{ url_for('staff.points_detail') }}"><span aria-hidden="true">&#11045;</span> Points</a>
+          <a class="section-tab{% if request.endpoint == 'staff.room_detail' %} active{% endif %}" href="{{ url_for('staff.room_detail') }}"><span aria-hidden="true">&#8962;</span> Room</a>
+          <a class="section-tab{% if request.endpoint == 'staff.messages_detail' %} active{% endif %}" href="{{ url_for('staff.messages_detail') }}"><span aria-hidden="true">&#10022;</span> Messages</a>
+          <a class="section-tab{% if request.endpoint == 'staff.schedule_detail' %} active{% endif %}" href="{{ url_for('staff.schedule_detail') }}"><span aria-hidden="true">&#9711;</span> Schedule</a>
+          <a class="section-tab{% if request.blueprint == 'staff' and request.endpoint.startswith('staff.request') %} active{% endif %}" href="{{ url_for('staff.requests_list') }}"><span aria-hidden="true">&#9670;</span> Requests</a>
+        {% else %}
+          <a class="section-tab{% if request.endpoint == 'user.dashboard' %} active{% endif %}" href="{{ url_for('user.dashboard') }}"><span aria-hidden="true">&#9670;</span> Overview</a>
+          <a class="section-tab{% if request.endpoint == 'user.points_detail' %} active{% endif %}" href="{{ url_for('user.points_detail') }}"><span aria-hidden="true">&#11045;</span> Points</a>
+          <a class="section-tab{% if request.endpoint == 'user.room_detail' %} active{% endif %}" href="{{ url_for('user.room_detail') }}"><span aria-hidden="true">&#8962;</span> Room</a>
+          <a class="section-tab{% if request.endpoint == 'user.messages_detail' %} active{% endif %}" href="{{ url_for('user.messages_detail') }}"><span aria-hidden="true">&#10022;</span> Messages</a>
+          <a class="section-tab{% if request.endpoint == 'user.schedule_detail' %} active{% endif %}" href="{{ url_for('user.schedule_detail') }}"><span aria-hidden="true">&#9711;</span> Schedule</a>
+        {% endif %}
+      </nav>
+
+      <main class="page-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flashes">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <div class="cx-backdrop" id="cx-backdrop">
+      <div class="cx-sheet" role="dialog" aria-modal="true" aria-label="Your info">
+        <div class="cx-sheet-top">
+          <div class="cx-sheet-av">{{ current_user.name[0] }}{{ (current_user.surname or "")[0] }}</div>
+          <div>
+            <div class="cx-sheet-name">{{ current_user.full_name }}</div>
+            <div class="cx-sheet-role">{{ current_user.role_enum.name.title() }}</div>
+          </div>
+          <button class="cx-sheet-close" id="cx-sheet-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="cx-sheet-list">
+          {% if current_user.group %}
+          <a class="cx-sheet-row" href="{{ url_for('user.points_detail') if current_user.is_plain_user else url_for('staff.points_detail') }}">
+            <div class="cx-sheet-row-ic">&#11041;</div>
+            <div>
+              <div class="cx-sheet-row-label">Group</div>
+              <div class="cx-sheet-row-value">{{ current_user.group.name }}</div>
+            </div>
+            <div class="cx-sheet-row-arrow">&rarr;</div>
+          </a>
+          {% endif %}
+          {% if current_user.room %}
+          <a class="cx-sheet-row" href="{{ url_for('user.room_detail') if current_user.is_plain_user else url_for('staff.room_detail') }}">
+            <div class="cx-sheet-row-ic">&#8962;</div>
+            <div>
+              <div class="cx-sheet-row-label">Room</div>
+              <div class="cx-sheet-row-value">{{ current_user.room.building.name }} &middot; Room {{ current_user.room.number }}</div>
+            </div>
+            <div class="cx-sheet-row-arrow">&rarr;</div>
+          </a>
+          {% endif %}
+          {% if not current_user.group and not current_user.room and current_user.is_admin %}
+          <div class="cx-sheet-empty" style="font-size:13px; color:var(--cx-muted); margin-top:4px;">
+            Admin accounts aren't assigned to a group or room.
+          </div>
+          {% endif %}
+          <button type="button" class="cx-sheet-row cx-sheet-btn" id="notif-toggle-btn">
+            <div class="cx-sheet-row-ic">&#128276;</div>
+            <div>
+              <div class="cx-sheet-row-label">Notifications</div>
+              <div class="cx-sheet-row-value">Enable push notifications</div>
+            </div>
+          </button>
+          <button type="button" class="cx-sheet-row cx-sheet-btn" id="install-app-btn" hidden>
+            <div class="cx-sheet-row-ic">&#8681;</div>
+            <div>
+              <div class="cx-sheet-row-label">App</div>
+              <div class="cx-sheet-row-value">Install this app</div>
+            </div>
+          </button>
+          <a class="cx-sheet-row" href="{{ url_for('auth.logout') }}">
+            <div class="cx-sheet-row-ic">&#10140;</div>
+            <div>
+              <div class="cx-sheet-row-label">Account</div>
+              <div class="cx-sheet-row-value">Log out</div>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
-    {% if current_user.is_authenticated %}
-    <a class="icon-btn" href="{{ url_for('auth.logout') }}" title="Dil" aria-label="Dil">⏻</a>
-    {% endif %}
   </div>
-</div>
-{% endblock %}
-
-<div class="app-shell">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash flash-{{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-
-  {% block content %}{% endblock %}
-</div>
-
-{% block bottomnav %}
-{% if current_user.is_authenticated and not current_user.is_superuser %}
-<nav class="bottom-nav">
-  {% if current_user.role.value == 'kampist' %}
-    <a class="nav-item {{ 'active' if request.endpoint == 'kampist.dashboard' }}" href="{{ url_for('kampist.dashboard') }}">🏠<span>Paneli</span></a>
-    {% if current_user.camper_profile and current_user.camper_profile.group and current_user.camper_profile.group.chat_room %}
-    <a class="nav-item {{ 'active' if request.endpoint == 'chat.view_room' }}" href="{{ url_for('chat.view_room', room_id=current_user.camper_profile.group.chat_room.id) }}">💬<span>Chat</span></a>
-    {% endif %}
-  {% elif current_user.role.value == 'staff' %}
-    <a class="nav-item {{ 'active' if request.endpoint == 'staff.dashboard' }}" href="{{ url_for('staff.dashboard') }}">🏠<span>Paneli</span></a>
-    <a class="nav-item {{ 'active' if request.endpoint == 'staff.emergency_info' }}" href="{{ url_for('staff.emergency_info') }}">🚑<span>Emergjenca</span></a>
-  {% elif current_user.role.value == 'admin' %}
-    <a class="nav-item {{ 'active' if request.endpoint == 'admin.dashboard' }}" href="{{ url_for('admin.dashboard') }}">🏠<span>Paneli</span></a>
-    <a class="nav-item {{ 'active' if request.endpoint == 'admin.users' }}" href="{{ url_for('admin.users') }}">👥<span>Përdorues</span></a>
-    <a class="nav-item {{ 'active' if request.endpoint == 'admin.groups' }}" href="{{ url_for('admin.groups') }}">🦅<span>Grupet</span></a>
-    <a class="nav-item {{ 'active' if request.endpoint == 'admin.rooms' }}" href="{{ url_for('admin.rooms') }}">🛏️<span>Dhomat</span></a>
-    <a class="nav-item {{ 'active' if request.endpoint == 'admin.reports' }}" href="{{ url_for('admin.reports') }}">📊<span>Raporte</span></a>
+  {% else %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes flashes-standalone">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block bare_content %}{% endblock %}
   {% endif %}
-</nav>
-{% endif %}
-{% endblock %}
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
-}
-</script>
-{% if current_user.is_authenticated and not current_user.is_superuser %}
-<script src="{{ url_for('static', filename='js/push.js') }}"></script>
-{% endif %}
-{% block extra_scripts %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/carousel.js') }}" defer></script>
 </body>
 </html>

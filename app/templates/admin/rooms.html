@@ -1,58 +1,54 @@
 {% extends "base.html" %}
+{% block title %}Rooms{% endblock %}
 {% block content %}
-<div class="page-title"><h1>Dhomat</h1></div>
-
-<div class="card">
-  <div class="card-title">Krijo Ndërtesë</div>
-  <form method="POST" action="{{ url_for('admin.create_building') }}" style="display:flex; gap:8px;">
-    <input type="text" name="name" placeholder="p.sh. Ndërtesa B" required>
-    <button class="btn btn-primary" type="submit">Krijo</button>
-  </form>
-</div>
-
-<div class="card">
-  <div class="card-title">Krijo Dhomë</div>
-  <form method="POST" action="{{ url_for('admin.create_room') }}">
-    <label>Ndërtesa</label>
-    <select name="building_id" required>
-      {% for b in buildings %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}
-    </select>
-    <label>Numri i dhomës</label>
-    <input type="text" name="number" required>
-    <label>Kapaciteti</label>
-    <input type="number" name="capacity" value="4" min="1" max="20">
-    <button class="btn btn-primary btn-block" type="submit" style="margin-top:10px;">Krijo</button>
-  </form>
+<div class="page-head-row">
+  <div class="page-head">
+    <div class="eyebrow">Admin · Manage</div>
+    <h1>Buildings &amp; Rooms</h1>
+    <p>Assign users to rooms from the Users tab — capacity is enforced there. Tap a room card to edit it.</p>
+  </div>
+  <div class="page-head-actions">
+    <a class="btn btn-outline" href="{{ url_for('admin.building_new') }}">+ Building</a>
+    <a class="btn btn-amber" href="{{ url_for('admin.room_new') }}">+ Room</a>
+  </div>
 </div>
 
 {% for b in buildings %}
-<div class="card">
-  <div class="card-title">{{ b.name }}</div>
-  {% for r in b.rooms %}
-  <div class="card-row"><span>Dhoma {{ r.number }}</span><span class="muted">{{ r.occupants|length }}/{{ r.capacity }}</span></div>
-  {% else %}
-  <p class="muted">S'ka dhoma ende.</p>
-  {% endfor %}
+<div class="building-block">
+  <div class="building-block-head">
+    <h3>{{ b.name }}</h3>
+    <div class="page-head-actions">
+      <a class="btn btn-outline btn-sm" href="{{ url_for('admin.building_edit', building_id=b.building_id) }}">Edit building</a>
+      <form class="inline-form" method="POST" action="{{ url_for('admin.building_delete', building_id=b.building_id) }}"
+            onsubmit="return confirm('Delete building {{ b.name }} and all its rooms? Occupants will just be unassigned.');">
+        {{ delete_form.hidden_tag() }}
+        <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  <div class="entity-grid">
+    {% for r in b.rooms|sort(attribute="number") %}
+    <div class="entity-card">
+      <a class="entity-card-link" href="{{ url_for('admin.room_edit', room_id=r.room_id) }}" aria-label="Edit room {{ r.number }}"></a>
+      <div class="entity-card-top">
+        <div class="entity-card-name">Room {{ r.number }}</div>
+        <div class="entity-card-sub">{{ r.occupant_count }}/{{ r.capacity }} occupants</div>
+      </div>
+      <div class="entity-card-meta">
+        {% if r.is_full %}<span class="badge badge-full">Full</span>{% else %}<span class="badge badge-ok">Open</span>{% endif %}
+      </div>
+      <form class="entity-card-delete" method="POST" action="{{ url_for('admin.room_delete', room_id=r.room_id) }}"
+            onsubmit="return confirm('Delete room {{ r.number }}? Occupants will just be unassigned.');">
+        {{ delete_form.hidden_tag() }}
+        <button class="entity-card-delete-btn" type="submit" aria-label="Delete room {{ r.number }}">&times;</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="entity-card-empty">No rooms in this building yet.</div>
+    {% endfor %}
+  </div>
 </div>
+{% else %}
+<div class="entity-card-empty">No buildings yet — add one to start creating rooms.</div>
 {% endfor %}
-
-<div class="card">
-  <div class="card-title">Cakto Kampistë Pa Dhomë</div>
-  {% for p in unassigned %}
-  <form method="POST" action="{{ url_for('admin.assign_room') }}" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-    <input type="hidden" name="profile_id" value="{{ p.id }}">
-    <span style="flex:1;">{{ p.first_name }} {{ p.last_name }}</span>
-    <select name="room_id" onchange="this.form.submit()">
-      <option value="">Zgjidh dhomë</option>
-      {% for b in buildings %}
-        {% for r in b.rooms %}
-        <option value="{{ r.id }}">{{ b.name }} — {{ r.number }}</option>
-        {% endfor %}
-      {% endfor %}
-    </select>
-  </form>
-  {% else %}
-  <p class="muted">Të gjithë kampistët kanë dhomë.</p>
-  {% endfor %}
-</div>
 {% endblock %}

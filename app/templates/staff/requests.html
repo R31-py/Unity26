@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Requests{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Staff · Requests</div>
+  <h1>My Requests</h1>
+  <p>Propose a message, points/penalty entry, or event. Nothing goes live until an Admin approves it.</p>
+</div>
+
+<div class="placeholder-grid">
+  <div class="placeholder-card">
+    <h3>Message</h3>
+    <p>Propose an announcement — broadcast to everyone, or scoped to one group.</p>
+    <a class="btn btn-outline btn-sm" style="margin-top:10px;" href="{{ url_for('staff.request_message_new') }}">+ New message request</a>
+  </div>
+  <div class="placeholder-card">
+    <h3>Points / Penalty</h3>
+    <p>Propose a group-wide or individually attributed ledger entry, with a reason.</p>
+    <a class="btn btn-outline btn-sm" style="margin-top:10px;" href="{{ url_for('staff.request_point_new') }}">+ New points request</a>
+  </div>
+  <div class="placeholder-card">
+    <h3>Event</h3>
+    <p>Propose an addition to the weekly schedule.</p>
+    <a class="btn btn-outline btn-sm" style="margin-top:10px;" href="{{ url_for('staff.request_event_new') }}">+ New event request</a>
+  </div>
+</div>
+
+<div class="section-title">Status of my requests</div>
+<div class="table-card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Summary</th>
+        <th>Status</th>
+        <th>Submitted</th>
+        <th>Reviewed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in requests %}
+      <tr>
+        <td>
+          {% if r.target_type == "message" %}Message
+          {% elif r.target_type == "group_event" %}Points/Penalty
+          {% elif r.target_type == "event" %}Event
+          {% else %}{{ r.target_type }}{% endif %}
+        </td>
+        <td>
+          <strong>{{ r.payload.get("title") or r.payload.get("name") }}</strong>
+          {% if r.target_type == "group_event" %}
+            <div class="muted">{{ "+" if r.payload.get("type") == 1 else "-" }}{{ r.payload.get("value") }}</div>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.status == "pending" %}
+            <span class="badge badge-pending">Pending</span>
+          {% elif r.status == "approved" %}
+            <span class="badge badge-ok">Approved</span>
+          {% else %}
+            <span class="badge badge-full">Rejected</span>
+          {% endif %}
+          {% if r.status == "rejected" and r.review_reason %}
+            <div class="muted" style="font-size:12px; margin-top:4px;">{{ r.review_reason }}</div>
+          {% endif %}
+        </td>
+        <td class="muted">{{ r.created_at.strftime("%b %d, %H:%M") }}</td>
+        <td class="muted">{{ r.reviewed_at.strftime("%b %d, %H:%M") if r.reviewed_at else "—" }}</td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="5">You haven't submitted any requests yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
