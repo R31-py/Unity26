@@ -4,11 +4,5 @@
     "wsgi.py": {
       "maxDuration": 30
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/check-reminders",
-      "schedule": "*/10 * * * *"
-    }
-  ]
+  }
 }

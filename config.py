@@ -53,11 +53,11 @@ class Config:
     SEED_ADMIN_USERNAME = os.environ.get("SEED_ADMIN_USERNAME", "admin")
     SEED_ADMIN_PASSWORD = os.environ.get("SEED_ADMIN_PASSWORD", "admin123")
 
-    # --- Cron auth (Stage 8) ---
-    # Vercel sends this project env var back as `Authorization: Bearer
-    # <value>` on every Cron invocation (see vercel.json "crons"). Set it
-    # as a Vercel env var (any long random string); the same value must be
-    # set here so /api/cron/check-reminders can verify the request is
-    # really from Vercel's scheduler and not a random public hit. Left
-    # blank, the endpoint runs unauthenticated — fine for local dev only.
+    # --- Manual reminder-check auth (Stage 8) ---
+    # /api/cron/check-reminders is now just a manual/debug trigger — the
+    # real checking runs via before_request (app/reminders.py) piggybacked
+    # on normal traffic, not a Vercel Cron job. If you set this to a long
+    # random string (as a Vercel/local env var), the route requires
+    # `Authorization: Bearer <value>` to be hit. Left blank, it runs
+    # unauthenticated — fine for local dev only.
     CRON_SECRET = os.environ.get("CRON_SECRET", "")

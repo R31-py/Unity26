@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from flask import current_app
 
 from app.extensions import db
-from app.models import Event, User, Role
+from app.models import Event, User, Role, Setting
 from app.push import send_push_to_users
 
 REMINDER_LEAD = timedelta(minutes=20)
@@ -27,6 +27,13 @@ REMINDER_LEAD = timedelta(minutes=20)
 # deploy issue) and come back late, don't fire "starting now" for an
 # event that started hours ago — it's no longer a useful reminder.
 STALE_CUTOFF = timedelta(hours=3)
+
+# How often maybe_check_reminders() actually does the work, rather than
+# no-op'ing. Kept well under REMINDER_LEAD so the 20-minute window can't
+# be missed between checks.
+CHECK_INTERVAL = timedelta(minutes=5)
+
+_SETTING_KEY = "last_reminder_check"
 
 
 def _audience():
@@ -103,3 +110,38 @@ def check_and_send_reminders(now=None):
         "twenty_min_reminders_sent": twenty_min_sent,
         "start_reminders_sent": start_sent,
     }
+
+
+def maybe_check_reminders():
+    """Piggybacks the reminder check onto ordinary request traffic instead
+    of a dedicated scheduler (Vercel's Hobby-plan Cron only allows one run
+    per day, far too coarse for a 20-minutes-before reminder — see
+    vercel.json history / README §Stage 8).
+
+    Called from a `before_request` hook. Cheap no-op on most requests: it
+    only actually runs check_and_send_reminders() if CHECK_INTERVAL has
+    elapsed since the last time some request triggered it. The timestamp
+    is written to the DB first, before the real check runs, so two
+    requests arriving close together don't both do the work.
+
+    Trade-off: reminders only fire while the app is receiving traffic. In
+    practice someone's checking the schedule/messages during camp hours,
+    so this is fine — nothing important is happening at 3am with the app
+    idle anyway.
+    """
+    now = datetime.utcnow()
+
+    setting = db.session.get(Setting, _SETTING_KEY)
+    if setting is not None:
+        last = datetime.fromisoformat(setting.value)
+        if now - last < CHECK_INTERVAL:
+            return None  # ran recently enough, skip
+
+    if setting is None:
+        setting = Setting(key=_SETTING_KEY, value=now.isoformat())
+        db.session.add(setting)
+    else:
+        setting.value = now.isoformat()
+    db.session.commit()
+
+    return check_and_send_reminders(now)

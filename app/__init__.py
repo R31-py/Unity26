@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, current_app
 
 from config import Config
 from app.extensions import db, login_manager, csrf
@@ -40,6 +40,19 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp)
     app.register_blueprint(staff_bp)
     app.register_blueprint(user_bp)
+
+    # --- reminder checks, piggybacked on traffic instead of Vercel Cron ---
+    # (Hobby plan only allows daily crons — see app/reminders.py docstring.)
+    @app.before_request
+    def _maybe_run_reminder_check():
+        from app.reminders import maybe_check_reminders
+
+        try:
+            maybe_check_reminders()
+        except Exception:
+            # Never let a reminder-check hiccup break the actual page/
+            # request the user is waiting on.
+            current_app.logger.exception("maybe_check_reminders() failed")
 
     # --- template context ---
     @app.context_processor

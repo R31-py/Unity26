@@ -84,10 +84,14 @@ def push_unsubscribe():
 
 
 # ---------------------------------------------------------------------------
-# Event reminders (spec §4, §5, §2.2.6) — Stage 8. Vercel Cron hits this on
-# a schedule (see vercel.json); it's a plain GET so it also works fine hit
-# by hand (curl, or a browser tab) for local testing. Guarded by
-# CRON_SECRET when one's configured — see config.py for why.
+# Event reminders (spec §4, §5, §2.2.6) — Stage 8. The actual reminder
+# checking now runs automatically via before_request (see
+# app/reminders.py: maybe_check_reminders), piggybacked on normal traffic
+# instead of a Vercel Cron job (Hobby plan only allows daily crons — too
+# coarse for a 20-minutes-before reminder). This route is kept as a manual
+# trigger for local testing / debugging (curl, or a browser tab); it
+# forces an immediate check regardless of the 5-minute throttle. Guarded
+# by CRON_SECRET when one's configured — see config.py for why.
 # ---------------------------------------------------------------------------
 @main_bp.route("/api/cron/check-reminders")
 def cron_check_reminders():

@@ -288,6 +288,22 @@ class PushSubscription(db.Model):
 
 
 # ---------------------------------------------------------------------------
+# App-wide key/value settings — Stage 8. Currently just tracks when the
+# reminder check last ran, since that's now piggybacked on regular request
+# traffic instead of a Vercel Cron job (Hobby plan only allows daily crons,
+# too coarse for a 20-minutes-before reminder).
+# ---------------------------------------------------------------------------
+class Setting(db.Model):
+    __tablename__ = "settings"
+
+    key = db.Column(db.String(50), primary_key=True)
+    value = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"<Setting {self.key}={self.value!r}>"
+
+
+# ---------------------------------------------------------------------------
 # Staff change requests — wired up in Stage 6
 # ---------------------------------------------------------------------------
 class ChangeRequest(db.Model):
