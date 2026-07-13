@@ -8,6 +8,7 @@
   <p>Your group's full ledger, and how every group currently ranks.</p>
 </div>
 
+<div data-live-key="points" data-live-version="{{ points_version }}">
 {% if points %}
 <div class="card-grid">
   <div class="stat-card">
@@ -67,5 +68,6 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
 </div>
 {% endblock %}

@@ -16,6 +16,7 @@
   <a class="btn btn-sm {{ 'btn-amber' if status_filter == 'all' else 'btn-outline' }}" href="{{ url_for('admin.requests_list', status='all') }}">All</a>
 </div>
 
+<div data-live-key="requests" data-live-version="{{ requests_version }}">
 <div class="table-card">
   <table class="data-table">
     <thead>
@@ -98,5 +99,6 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
 </div>
 {% endblock %}

@@ -190,6 +190,11 @@
 
   document.querySelectorAll(".cx-carousel-wrap").forEach(initCarousel);
 
+  // Exposed so live.js (Stage 9) can re-wire a carousel after swapping in
+  // freshly-fetched markup — the DOM nodes are new, so the listeners
+  // attached above don't carry over automatically.
+  window.reinitCarousel = initCarousel;
+
   // --- Avatar bottom sheet: shared by every carousel page ---
   var avatarBtn = document.getElementById("cx-avatar-btn");
   var backdrop = document.getElementById("cx-backdrop");

@@ -41,6 +41,10 @@ def create_app(config_class=Config):
     app.register_blueprint(staff_bp)
     app.register_blueprint(user_bp)
 
+    from app.live import live_bp
+
+    app.register_blueprint(live_bp)
+
     # --- reminder checks, piggybacked on traffic instead of Vercel Cron ---
     # (Hobby plan only allows daily crons — see app/reminders.py docstring.)
     @app.before_request

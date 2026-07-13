@@ -23,6 +23,8 @@ staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
 @login_required
 @role_required(Role.STAFF)
 def dashboard():
+    from app.live import compute_signal
+
     points = get_points_summary(current_user)
     room = get_room_summary(current_user)
     messages = get_messages_for(current_user)
@@ -40,6 +42,9 @@ def dashboard():
         next_event=next_event,
         next_event_relative=next_event_relative,
         pending_own_requests=pending_own_requests,
+        messages_version=compute_signal("messages", current_user),
+        points_version=compute_signal("points", current_user),
+        requests_version=compute_signal("requests", current_user),
     )
 
 
@@ -50,9 +55,16 @@ def dashboard():
 @login_required
 @role_required(Role.STAFF)
 def points_detail():
+    from app.live import compute_signal
+
     points = get_points_summary(current_user)
     leaderboard = get_group_leaderboard(highlight_group_id=current_user.group_id)
-    return render_template("staff/points_detail.html", points=points, leaderboard=leaderboard)
+    return render_template(
+        "staff/points_detail.html",
+        points=points,
+        leaderboard=leaderboard,
+        points_version=compute_signal("points", current_user),
+    )
 
 
 @staff_bp.route("/room")
@@ -67,8 +79,14 @@ def room_detail():
 @login_required
 @role_required(Role.STAFF)
 def messages_detail():
+    from app.live import compute_signal
+
     messages = get_messages_for(current_user)
-    return render_template("staff/messages_detail.html", messages=messages)
+    return render_template(
+        "staff/messages_detail.html",
+        messages=messages,
+        messages_version=compute_signal("messages", current_user),
+    )
 
 
 @staff_bp.route("/schedule")
@@ -87,12 +105,18 @@ def schedule_detail():
 @login_required
 @role_required(Role.STAFF)
 def requests_list():
+    from app.live import compute_signal
+
     own_requests = (
         ChangeRequest.query.filter_by(submitted_by_user_id=current_user.user_id)
         .order_by(ChangeRequest.created_at.desc())
         .all()
     )
-    return render_template("staff/requests.html", requests=own_requests)
+    return render_template(
+        "staff/requests.html",
+        requests=own_requests,
+        requests_version=compute_signal("requests", current_user),
+    )
 
 
 @staff_bp.route("/requests/new/message", methods=["GET", "POST"])

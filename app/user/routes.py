@@ -20,6 +20,8 @@ user_bp = Blueprint("user", __name__, url_prefix="/dashboard")
 @login_required
 @role_required(Role.USER)
 def dashboard():
+    from app.live import compute_signal
+
     points = get_points_summary(current_user)
     room = get_room_summary(current_user)
     messages = get_messages_for(current_user)
@@ -33,6 +35,8 @@ def dashboard():
         unread_message_count=get_unread_message_count(current_user),
         next_event=next_event,
         next_event_relative=next_event_relative,
+        messages_version=compute_signal("messages", current_user),
+        points_version=compute_signal("points", current_user),
     )
 
 
@@ -45,9 +49,16 @@ def dashboard():
 @login_required
 @role_required(Role.USER)
 def points_detail():
+    from app.live import compute_signal
+
     points = get_points_summary(current_user)
     leaderboard = get_group_leaderboard(highlight_group_id=current_user.group_id)
-    return render_template("user/points_detail.html", points=points, leaderboard=leaderboard)
+    return render_template(
+        "user/points_detail.html",
+        points=points,
+        leaderboard=leaderboard,
+        points_version=compute_signal("points", current_user),
+    )
 
 
 @user_bp.route("/room")
@@ -62,8 +73,14 @@ def room_detail():
 @login_required
 @role_required(Role.USER)
 def messages_detail():
+    from app.live import compute_signal
+
     messages = get_messages_for(current_user)
-    return render_template("user/messages_detail.html", messages=messages)
+    return render_template(
+        "user/messages_detail.html",
+        messages=messages,
+        messages_version=compute_signal("messages", current_user),
+    )
 
 
 @user_bp.route("/schedule")

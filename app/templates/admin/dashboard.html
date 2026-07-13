@@ -4,6 +4,8 @@
 {% block brand_tag %}Admin console{% endblock %}
 
 {% block carousel_content %}
+<div data-live-key="messages,points,requests"
+     data-live-version="{{ messages_version }}|{{ points_version }}|{{ requests_version }}">
 <div class="cx-carousel-wrap" id="carouselWrap" tabindex="0" aria-label="Dashboard sections, use arrow keys to move">
   <div class="cx-rail"></div>
   <div class="cx-track js-pending" id="track">
@@ -57,5 +59,6 @@
     {% endcall %}
 
   </div>
+</div>
 </div>
 {% endblock %}

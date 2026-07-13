@@ -71,7 +71,15 @@ def dashboard():
         "pending_requests": len(pending),
         "pending_by_type": pending_by_type,
     }
-    return render_template("admin/dashboard.html", stats=stats)
+    from app.live import compute_signal
+
+    return render_template(
+        "admin/dashboard.html",
+        stats=stats,
+        messages_version=compute_signal("messages", current_user),
+        points_version=compute_signal("points", current_user),
+        requests_version=compute_signal("requests", current_user),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -513,9 +521,16 @@ def _audience_choices():
 @login_required
 @role_required(Role.ADMIN)
 def messages():
+    from app.live import compute_signal
+
     all_messages = Message.query.order_by(Message.time.desc()).all()
     delete_form = ConfirmDeleteForm()
-    return render_template("admin/messages.html", messages=all_messages, delete_form=delete_form)
+    return render_template(
+        "admin/messages.html",
+        messages=all_messages,
+        delete_form=delete_form,
+        messages_version=compute_signal("messages", current_user),
+    )
 
 
 @admin_bp.route("/messages/new", methods=["GET", "POST"])
@@ -754,9 +769,12 @@ def requests_list():
     pending_count = ChangeRequest.query.filter_by(status=RequestStatus.PENDING).count()
     reject_form = ReviewRejectForm()
     approve_form = ConfirmDeleteForm()  # CSRF-only, reused as a generic "confirm" form
+    from app.live import compute_signal
+
     return render_template(
         "admin/requests.html",
         requests=all_requests,
+        requests_version=compute_signal("requests", current_user),
         status_filter=status_filter,
         pending_count=pending_count,
         reject_form=reject_form,

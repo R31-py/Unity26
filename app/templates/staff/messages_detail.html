@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block carousel_content %}
+<div data-live-key="messages" data-live-version="{{ messages_version }}">
 <div class="cx-carousel-wrap" id="carouselWrap" tabindex="0" aria-label="Messages, use arrow keys to move">
   <div class="cx-rail"></div>
   <div class="cx-track js-pending" id="track">
@@ -35,4 +36,5 @@
   <div class="cx-card-body">Announcements from Admin will show up here.</div>
 </div>
 {% endif %}
+</div>
 {% endblock %}
