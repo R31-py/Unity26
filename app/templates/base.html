@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Camp{% endblock %} · Camp Points</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset_url('css/style.css') }}">
 
   <!-- PWA: installability (spec §7, Stage 7) -->
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
@@ -42,10 +42,6 @@
         </div>
       </div>
 
-      {# ---- Section tabs: replaces the old sidebar. A small, horizontally
-         swipeable strip of the same section chips used on the Overview
-         carousel, so every page keeps the same "carousel" navigation
-         language without a hamburger menu. ---- #}
       <nav class="section-tabs" aria-label="Sections">
         {% if current_user.is_admin %}
           <a class="section-tab{% if request.endpoint == 'admin.dashboard' %} active{% endif %}" href="{{ url_for('admin.dashboard') }}"><span aria-hidden="true">&#9670;</span> Overview</a>
@@ -161,8 +157,8 @@
     {% endwith %}
     {% block bare_content %}{% endblock %}
   {% endif %}
-  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='js/carousel.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='js/live.js') }}" defer></script>
+  <script src="{{ asset_url('js/app.js') }}" defer></script>
+  <script src="{{ asset_url('js/carousel.js') }}" defer></script>
+  <script src="{{ asset_url('js/live.js') }}" defer></script>
 </body>
 </html>

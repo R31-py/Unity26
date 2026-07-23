@@ -10,34 +10,34 @@
   <div class="cx-rail"></div>
   <div class="cx-track js-pending" id="track">
 
-    {% call cx.item("&#9678;", "Users", url_for('admin.users'), "Accounts",
+    {% call cx.item("U", "Users", url_for('admin.users'), "Accounts",
                     stats.user_count|string ~ " accounts", initial_focus=true) %}
       <div class="cx-card-sub">{{ stats.staff_count }} staff &middot; {{ stats.camper_count }} campers</div>
       <div class="cx-card-cta">Manage users &rarr;</div>
     {% endcall %}
 
-    {% call cx.item("&#11041;", "Groups", url_for('admin.groups'), "Groups",
+    {% call cx.item("G", "Groups", url_for('admin.groups'), "Groups",
                     stats.group_count|string ~ " groups") %}
       <div class="cx-card-cta">Manage groups &amp; ranks &rarr;</div>
     {% endcall %}
 
-    {% call cx.item("&#8962;", "Rooms", url_for('admin.rooms'), "Buildings",
+    {% call cx.item("R", "Rooms", url_for('admin.rooms'), "Buildings",
                     stats.room_count|string ~ " rooms") %}
       <div class="cx-card-sub">{{ stats.full_room_count }} at full capacity</div>
       <div class="cx-card-cta">Manage rooms &rarr;</div>
     {% endcall %}
 
-    {% call cx.item("&#11041;", "Points", url_for('admin.points'), "This week",
+    {% call cx.item("P", "Points", url_for('admin.points'), "This week",
                     stats.point_entry_count|string ~ " entries") %}
       <div class="cx-card-cta">Manage points &amp; penalties &rarr;</div>
     {% endcall %}
 
-    {% call cx.item("&#10022;", "Messages", url_for('admin.messages'), "Sent",
+    {% call cx.item("N", "Messages", url_for('admin.messages'), "Sent",
                     stats.message_count|string ~ " messages") %}
       <div class="cx-card-cta">Manage messages &rarr;</div>
     {% endcall %}
 
-    {% call cx.item("&#9711;", "Events", url_for('admin.events'), "Next up",
+    {% call cx.item("E", "Events", url_for('admin.events'), "Next up",
                     stats.next_event.name if stats.next_event else "No events yet") %}
       {% if stats.next_event %}
         <div class="cx-mono-time">{{ stats.next_event.time.strftime("%d %b &middot; %H:%M")|safe }}</div>
@@ -45,7 +45,7 @@
       <div class="cx-card-cta">Manage events &rarr;</div>
     {% endcall %}
 
-    {% call cx.item("&#9670;", "Requests", url_for('admin.requests_list'), "Awaiting review",
+    {% call cx.item("R", "Requests", url_for('admin.requests_list'), "Awaiting review",
                     (stats.pending_requests|string ~ " pending") if stats.pending_requests else "All caught up",
                     unread=stats.pending_requests > 0) %}
       {% if stats.pending_requests %}

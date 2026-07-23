@@ -35,14 +35,19 @@ def send_push_to_users(users, payload):
     yet (Stage 7 works fine without keys — the button just stays unusable
     client-side). Subscriptions the push service reports as gone (410/404)
     are deleted so future sends don't keep retrying them.
+
+    Returns a summary dict: {"configured": bool, "total": int, "sent": int,
+    "failed": int, "stale": int} so callers can report back to the user
+    (e.g. the admin "send test notification" button) instead of this being
+    a fire-and-forget best-effort call.
     """
     if not vapid_configured():
         current_app.logger.info("Push skipped: VAPID keys not configured.")
-        return
+        return {"configured": False, "total": 0, "sent": 0, "failed": 0, "stale": 0}
 
     user_ids = [u.user_id for u in users]
     if not user_ids:
-        return
+        return {"configured": True, "total": 0, "sent": 0, "failed": 0, "stale": 0}
 
     # Imported lazily: pywebpush pulls in `cryptography`/`py_vapid`, which
     # are only needed once push is actually configured and used.
@@ -53,6 +58,8 @@ def send_push_to_users(users, payload):
     ).all()
     data = json.dumps(payload)
     stale_ids = []
+    sent = 0
+    failed = 0
 
     for sub in subscriptions:
         try:
@@ -65,14 +72,17 @@ def send_push_to_users(users, payload):
                 vapid_private_key=current_app.config["VAPID_PRIVATE_KEY"],
                 vapid_claims=_vapid_claims(),
             )
+            sent += 1
         except WebPushException as exc:
             status = getattr(exc.response, "status_code", None)
             if status in (404, 410):
                 # Browser/OS says this subscription is gone for good.
                 stale_ids.append(sub.id)
             else:
+                failed += 1
                 current_app.logger.warning("Push send failed (%s): %s", status, exc)
         except Exception as exc:  # pragma: no cover - defensive, push must never 500 a request
+            failed += 1
             current_app.logger.warning("Unexpected push error: %s", exc)
 
     if stale_ids:
@@ -80,6 +90,14 @@ def send_push_to_users(users, payload):
             synchronize_session=False
         )
         db.session.commit()
+
+    return {
+        "configured": True,
+        "total": len(subscriptions),
+        "sent": sent,
+        "failed": failed,
+        "stale": len(stale_ids),
+    }
 
 
 def audience_for_message(message):
@@ -107,3 +125,17 @@ def notify_new_message(message):
         send_push_to_users(audience, payload)
     except Exception as exc:  # pragma: no cover - defensive
         current_app.logger.warning("notify_new_message failed: %s", exc)
+
+
+def send_test_notification(sender):
+    """Admin "send test notification" button: pushes a test payload to
+    every account's push subscriptions (Admin, Staff, and User), so the
+    person testing can confirm push actually reaches devices end-to-end
+    before relying on it for real messages/reminders. Returns the same
+    summary dict as `send_push_to_users`."""
+    payload = {
+        "title": "Test notification",
+        "body": f"Sent by {sender.name} from the admin console — if you can see this, push is working.",
+        "url": "/",
+    }
+    return send_push_to_users(User.query.all(), payload)

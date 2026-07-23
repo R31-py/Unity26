@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Camp{% endblock %} · Camp Points</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset_url('css/style.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -98,6 +98,18 @@
             <div class="cx-sheet-row-value">Install this app</div>
           </div>
         </button>
+        {% if current_user.is_admin %}
+        <form method="POST" action="{{ url_for('admin.notifications_test') }}" class="cx-sheet-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="cx-sheet-row cx-sheet-btn">
+            <div class="cx-sheet-row-ic">&#128225;</div>
+            <div>
+              <div class="cx-sheet-row-label">Push notifications</div>
+              <div class="cx-sheet-row-value">Send test notification to everyone</div>
+            </div>
+          </button>
+        </form>
+        {% endif %}
         <a class="cx-sheet-row" href="{{ url_for('auth.logout') }}">
           <div class="cx-sheet-row-ic">&#10140;</div>
           <div>
@@ -120,8 +132,8 @@
   {% endif %}
 {% endwith %}
 
-<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
-<script src="{{ url_for('static', filename='js/carousel.js') }}" defer></script>
-<script src="{{ url_for('static', filename='js/live.js') }}" defer></script>
+<script src="{{ asset_url('js/app.js') }}" defer></script>
+<script src="{{ asset_url('js/carousel.js') }}" defer></script>
+<script src="{{ asset_url('js/live.js') }}" defer></script>
 </body>
 </html>

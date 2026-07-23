@@ -558,6 +558,21 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 
 .cx-screen { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; width: 100%; max-width: 480px; margin: 0 auto; }
 
+/* base.html's list/table/form pages (Users, Groups, Rooms, Points,
+   Messages, Events, Requests, every *_form.html, confirm pages, etc.)
+   share the dashboard's dark header/nav shell for a consistent look, but
+   their content (.page-content, .data-table, .card-grid, .entity-grid,
+   .form-card) is a normal desktop-width layout, not the single-column
+   mobile carousel dashboard_base.html renders. Without this override the
+   plain `.cx-screen` rule above squeezes them into a 480px column and
+   forces a full-viewport-height flex box regardless of how short the
+   actual content is, leaving a large empty gap under it. Give these pages
+   their own, wider max-width and let their height follow their content. */
+.cx-screen.page-screen {
+  max-width: 960px;
+  min-height: 0;
+}
+
 .cx-header { padding: 22px 20px 10px; position: relative; z-index: 6; background: transparent; }
 .cx-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .cx-brand { display: flex; flex-direction: column; min-width: 0; }
@@ -580,15 +595,11 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 .cx-back-link { color: var(--cx-blue-300); font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
 
 /* --- vertical carousel --- */
-.cx-carousel-wrap { position: relative; flex: 1; margin-top: 6px; outline: none; touch-action: none; cursor: grab; min-height: 420px; }
+.cx-carousel-wrap { position: relative; flex: 1; margin-top: 6px; outline: none; touch-action: none; cursor: grab; min-height: 50%; }
 .cx-carousel-wrap.grabbing { cursor: grabbing; }
 .cx-rail { position: absolute; left: 26px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, transparent, var(--cx-line) 12%, var(--cx-line) 88%, transparent); z-index: 1; }
-.cx-track { position: absolute; inset: 0; }
+.cx-track { position: absolute; inset: 0; min-height: 100vh; }
 .cx-item { position: absolute; left: 50px; right: 22px; transition: transform .38s cubic-bezier(.22,.9,.32,1), opacity .32s ease, height .38s ease; cursor: pointer; }
-/* Default (pre-JS / no-JS): show the full card, hide the collapsed chip —
-   so the page is still readable if JS fails to load, just without the
-   carousel interaction. JS overrides these per-item via inline styles
-   once it initializes. */
 .cx-item .cx-chip { display: none; }
 .cx-item .cx-card { display: block; }
 .cx-track.js-pending .cx-item { position: static; margin-bottom: 14px; }

@@ -82,6 +82,39 @@ def dashboard():
     )
 
 
+@admin_bp.route("/notifications/test", methods=["POST"])
+@login_required
+@role_required(Role.ADMIN)
+def notifications_test():
+    from app.push import send_test_notification, vapid_configured
+
+    if not vapid_configured():
+        flash(
+            "Push isn't configured yet — set VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY "
+            "(see generate_vapid_keys.py) before test notifications can be sent.",
+            "error",
+        )
+        return redirect(url_for("admin.dashboard"))
+
+    result = send_test_notification(current_user)
+    if result["total"] == 0:
+        flash(
+            "No one has push notifications turned on yet — there's nothing to send to. "
+            "Each person needs to enable notifications from their own device first.",
+            "error",
+        )
+    elif result["sent"] == result["total"]:
+        flash(f"Test notification sent to all {result['sent']} subscribed device(s).", "success")
+    else:
+        parts = [f"{result['sent']} of {result['total']} device(s) reached"]
+        if result["stale"]:
+            parts.append(f"{result['stale']} expired subscription(s) removed")
+        if result["failed"]:
+            parts.append(f"{result['failed']} failed")
+        flash("Test notification sent — " + ", ".join(parts) + ".", "info")
+    return redirect(url_for("admin.dashboard"))
+
+
 # ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------

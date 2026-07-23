@@ -12,16 +12,35 @@
  *  - Mouse wheel / arrow keys -> step focus by one
  */
 (function () {
-  function initCarousel(wrap) {
+  function initCarousel(wrap, opts) {
+    opts = opts || {};
+
+    // live.js (Stage 9) calls this again every time it swaps in a fresh
+    // copy of this wrap after a poll detects new data. Without this, each
+    // call would add another `window.addEventListener("resize", ...)`
+    // pointing at that call's now-detached DOM — an ever-growing pile of
+    // stale listeners for as long as the tab stays open. Clean up the
+    // previous init's listener first so repeated calls stay idempotent.
+    if (wrap._cxCleanup) {
+      wrap._cxCleanup();
+      wrap._cxCleanup = null;
+    }
+
     var track = wrap.querySelector(".cx-track");
     var items = Array.prototype.slice.call(wrap.querySelectorAll(".cx-item"));
     if (!items.length) return;
     if (track) track.classList.remove("js-pending");
 
-    var focusIndex = items.findIndex(function (el) {
-      return el.dataset.initialFocus === "true";
-    });
-    if (focusIndex < 0) focusIndex = 0;
+    // A live refresh can pass the index the user was already looking at
+    // (see live.js) so new data doesn't yank the carousel back to the
+    // first card out from under them.
+    var focusIndex = typeof opts.focusIndex === "number" ? opts.focusIndex : -1;
+    if (focusIndex < 0) {
+      focusIndex = items.findIndex(function (el) {
+        return el.dataset.initialFocus === "true";
+      });
+    }
+    if (focusIndex < 0 || focusIndex >= items.length) focusIndex = 0;
 
     var dots = [];
 
@@ -38,7 +57,24 @@
 
     function layout(liveOffset, dragTargetIndex) {
       liveOffset = liveOffset || 0;
-      var focusedH = 190, chipH = 56, gap = 14;
+      var focusedH = 190, chipH = 56, gap = 30;
+      var topGutter = 32, bottomGutter = 20;
+
+      // How far the stack reaches above/below the focused item's center,
+      // in px, so every item gets a slot — nothing past ±2 gets hidden
+      // anymore, so the container has to actually be tall enough for the
+      // full list, not just a fixed "looks about right" height.
+      function reach(count) {
+        return count > 0
+          ? focusedH / 2 + gap + (chipH + gap) * (count - 1) + chipH / 2
+          : focusedH / 2;
+      }
+      var above = reach(focusIndex);
+      var below = reach(items.length - 1 - focusIndex);
+      var centerY = topGutter + above;
+      var wrapHeight = topGutter + above + below + bottomGutter;
+
+      wrap.style.minHeight = "80%";
 
       items.forEach(function (el, i) {
         var dist = i - focusIndex;
@@ -51,17 +87,18 @@
           var dir = dist > 0 ? 1 : -1;
           var d = Math.abs(dist);
           offset = dir * (focusedH / 2 + gap + (chipH + gap) * (d - 1) + chipH / 2);
-          opacity = d === 1 ? 0.85 : (d === 2 ? 0.4 : 0);
+          // Every chip stays visible and tappable — distance only softens
+          // it a little for visual hierarchy, it never disappears.
+          opacity = Math.max(0.55, 0.95 - (d - 1) * 0.12);
           height = chipH;
         }
-        offset += liveOffset;
 
-        el.style.top = "50%";
+        el.style.top = (centerY + offset + liveOffset) + "px";
         el.style.height = height + "px";
-        el.style.transform = "translate(0,-50%) translateY(" + offset + "px)";
+        el.style.transform = "translateY(-50%)";
         el.style.opacity = opacity;
         el.style.zIndex = isFocused ? 3 : (2 - Math.min(Math.abs(dist), 2));
-        el.style.pointerEvents = opacity < 0.05 ? "none" : "auto";
+        el.style.pointerEvents = "auto";
         el.classList.toggle("cx-focused", isFocused);
         el.classList.toggle("cx-drag-target", dragTargetIndex === i);
 
@@ -71,8 +108,8 @@
         if (card) card.style.display = isFocused ? "block" : "none";
 
         var dot = dots[i];
-        dot.style.top = "calc(50% + " + offset + "px)";
-        dot.style.opacity = opacity < 0.15 ? 0.15 : 1;
+        dot.style.top = (centerY + offset + liveOffset) + "px";
+        dot.style.opacity = opacity < 0.6 ? 0.6 : 1;
         dot.classList.toggle("focused", isFocused);
       });
     }
@@ -184,11 +221,23 @@
       if (e.key === "ArrowUp") { e.preventDefault(); setFocus(focusIndex - 1); }
     });
 
-    window.addEventListener("resize", function () { layout(); });
+    function onResize() { layout(); }
+    window.addEventListener("resize", onResize);
+    wrap._cxCleanup = function () {
+      window.removeEventListener("resize", onResize);
+    };
+
     layout();
   }
 
-  document.querySelectorAll(".cx-carousel-wrap").forEach(initCarousel);
+  document.querySelectorAll(".cx-carousel-wrap").forEach(function (wrap) {
+    initCarousel(wrap);
+  });
+
+  // Exposed so live.js (Stage 9) can re-wire a carousel after swapping in
+  // freshly-fetched markup — the DOM nodes are new, so the listeners
+  // attached above don't carry over automatically.
+  window.reinitCarousel = initCarousel;
 
   // --- Avatar bottom sheet: shared by every carousel page ---
   var avatarBtn = document.getElementById("cx-avatar-btn");

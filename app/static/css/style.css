@@ -558,6 +558,21 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 
 .cx-screen { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; width: 100%; max-width: 480px; margin: 0 auto; }
 
+/* base.html's list/table/form pages (Users, Groups, Rooms, Points,
+   Messages, Events, Requests, every *_form.html, confirm pages, etc.)
+   share the dashboard's dark header/nav shell for a consistent look, but
+   their content (.page-content, .data-table, .card-grid, .entity-grid,
+   .form-card) is a normal desktop-width layout, not the single-column
+   mobile carousel dashboard_base.html renders. Without this override the
+   plain `.cx-screen` rule above squeezes them into a 480px column and
+   forces a full-viewport-height flex box regardless of how short the
+   actual content is, leaving a large empty gap under it. Give these pages
+   their own, wider max-width and let their height follow their content. */
+.cx-screen.page-screen {
+  max-width: 960px;
+  min-height: 0;
+}
+
 .cx-header { padding: 22px 20px 10px; position: relative; z-index: 6; background: transparent; }
 .cx-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .cx-brand { display: flex; flex-direction: column; min-width: 0; }

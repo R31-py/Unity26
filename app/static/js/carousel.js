@@ -12,16 +12,35 @@
  *  - Mouse wheel / arrow keys -> step focus by one
  */
 (function () {
-  function initCarousel(wrap) {
+  function initCarousel(wrap, opts) {
+    opts = opts || {};
+
+    // live.js (Stage 9) calls this again every time it swaps in a fresh
+    // copy of this wrap after a poll detects new data. Without this, each
+    // call would add another `window.addEventListener("resize", ...)`
+    // pointing at that call's now-detached DOM — an ever-growing pile of
+    // stale listeners for as long as the tab stays open. Clean up the
+    // previous init's listener first so repeated calls stay idempotent.
+    if (wrap._cxCleanup) {
+      wrap._cxCleanup();
+      wrap._cxCleanup = null;
+    }
+
     var track = wrap.querySelector(".cx-track");
     var items = Array.prototype.slice.call(wrap.querySelectorAll(".cx-item"));
     if (!items.length) return;
     if (track) track.classList.remove("js-pending");
 
-    var focusIndex = items.findIndex(function (el) {
-      return el.dataset.initialFocus === "true";
-    });
-    if (focusIndex < 0) focusIndex = 0;
+    // A live refresh can pass the index the user was already looking at
+    // (see live.js) so new data doesn't yank the carousel back to the
+    // first card out from under them.
+    var focusIndex = typeof opts.focusIndex === "number" ? opts.focusIndex : -1;
+    if (focusIndex < 0) {
+      focusIndex = items.findIndex(function (el) {
+        return el.dataset.initialFocus === "true";
+      });
+    }
+    if (focusIndex < 0 || focusIndex >= items.length) focusIndex = 0;
 
     var dots = [];
 
@@ -184,11 +203,18 @@
       if (e.key === "ArrowUp") { e.preventDefault(); setFocus(focusIndex - 1); }
     });
 
-    window.addEventListener("resize", function () { layout(); });
+    function onResize() { layout(); }
+    window.addEventListener("resize", onResize);
+    wrap._cxCleanup = function () {
+      window.removeEventListener("resize", onResize);
+    };
+
     layout();
   }
 
-  document.querySelectorAll(".cx-carousel-wrap").forEach(initCarousel);
+  document.querySelectorAll(".cx-carousel-wrap").forEach(function (wrap) {
+    initCarousel(wrap);
+  });
 
   // Exposed so live.js (Stage 9) can re-wire a carousel after swapping in
   // freshly-fetched markup — the DOM nodes are new, so the listeners
