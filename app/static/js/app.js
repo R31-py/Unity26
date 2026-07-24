@@ -39,6 +39,24 @@
   // --- Install prompt ------------------------------------------------
   let deferredInstallPrompt = null;
 
+  // Safari on iOS/iPadOS never fires `beforeinstallprompt` — there is no
+  // native install API there at all, "installing" is always the user
+  // manually tapping Share -> Add to Home Screen. Detect that case up
+  // front so we show instructions instead of a button that would
+  // otherwise just stay hidden forever, looking broken.
+  function isIos() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  }
+  function isStandalone() {
+    return window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+  }
+  function showIosInstallHintIfNeeded() {
+    if (!isIos() || isStandalone()) return;
+    const hint = document.getElementById("ios-install-hint");
+    if (hint) hint.hidden = false;
+  }
+
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     deferredInstallPrompt = event;
@@ -70,11 +88,12 @@
   }
 
   function setNotifBtnState(state) {
-    // state: 'unsupported' | 'denied' | 'off' | 'on' | 'busy'
+    // state: 'unsupported' | 'ios-not-installed' | 'denied' | 'off' | 'on' | 'busy'
     const btn = document.getElementById("notif-toggle-btn");
     if (!btn) return;
     const labels = {
       unsupported: "Notifications not supported",
+      "ios-not-installed": "Add to Home Screen to enable",
       unconfigured: "Push not set up yet",
       denied: "Notifications blocked",
       off: "Enable notifications",
@@ -84,6 +103,7 @@
     btn.textContent = labels[state] || labels.off;
     btn.disabled =
       state === "unsupported" ||
+      state === "ios-not-installed" ||
       state === "unconfigured" ||
       state === "denied" ||
       state === "busy";
@@ -91,6 +111,14 @@
   }
 
   async function refreshNotifState() {
+    if (isIos() && !isStandalone()) {
+      // iOS Safari doesn't expose the Push API at all in a regular
+      // browser tab — only inside an installed (Home Screen) web app,
+      // and only on iOS 16.4+. Say so specifically rather than the
+      // generic "not supported", since here it's fixable.
+      setNotifBtnState("ios-not-installed");
+      return;
+    }
     if (!pushSupported()) {
       setNotifBtnState("unsupported");
       return;
@@ -188,6 +216,7 @@
   document.addEventListener("DOMContentLoaded", async () => {
     await registerServiceWorker();
     wireInstallButton();
+    showIosInstallHintIfNeeded();
     wireNotifButton();
     refreshNotifState();
   });

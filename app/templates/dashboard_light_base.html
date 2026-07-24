@@ -107,6 +107,13 @@
           <div class="cx-sheet-row-value">Install this app</div>
         </div>
       </button>
+      <div class="cx-sheet-row" id="ios-install-hint" hidden>
+        <div class="cx-sheet-row-ic">&#8679;</div>
+        <div>
+          <div class="cx-sheet-row-label">App</div>
+          <div class="cx-sheet-row-value">Tap Share, then "Add to Home Screen"</div>
+        </div>
+      </div>
       {% if current_user.is_admin %}
       <form method="POST" action="{{ url_for('admin.notifications_test') }}" class="cx-sheet-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
