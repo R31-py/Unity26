@@ -26,7 +26,10 @@ def vapid_configured():
 
 
 def _vapid_claims():
-    return {"sub": current_app.config["VAPID_CLAIM_EMAIL"]}
+    email = current_app.config["VAPID_CLAIM_EMAIL"]
+    if not email.startswith("mailto:"):
+        email = f"mailto:{email}"
+    return {"sub": email}
 
 
 def send_push_to_users(users, payload):

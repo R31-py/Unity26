@@ -1,32 +1,58 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}Schedule{% endblock %}
-{% block content %}
-<div class="page-head">
-  <a class="btn btn-outline btn-sm" href="{{ url_for('user.dashboard') }}">&larr; Back</a>
-  <h1 style="margin-top:14px;">Schedule</h1>
+
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('user.dashboard') }}">&larr; Back</a>
+  <span class="gc-page-title">Schedule</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-week-nav">
+  <a class="gc-week-btn" href="?week={{ schedule.week_offset - 1 }}">&larr; Prev</a>
+  <span class="gc-week-label">
+    {{ schedule.week_start.strftime("%b %d") }}&ndash;{{ schedule.week_end.strftime("%d, %Y") }}
+    {% if schedule.is_current_week %}&middot; This week{% endif %}
+  </span>
+  <a class="gc-week-btn" href="?week={{ schedule.week_offset + 1 }}">Next &rarr;</a>
 </div>
 
-<div class="schedule-nav">
-  <a class="btn btn-outline btn-sm" href="?week={{ schedule.week_offset - 1 }}">&larr; Prev week</a>
-  <span class="week-label">
-    {{ schedule.week_start.strftime("%b %d") }} - {{ schedule.week_end.strftime("%b %d, %Y") }}
-    {% if schedule.is_current_week %}<span class="badge badge-ok">This week</span>{% endif %}
-  </span>
-  <a class="btn btn-outline btn-sm" href="?week={{ schedule.week_offset + 1 }}">Next week &rarr;</a>
-</div>
-<div class="schedule-grid">
-  {% for day in schedule.days %}
-  <div class="schedule-day{% if day.is_today %} is-today{% endif %}">
-    <div class="schedule-day-head">{{ day.date.strftime("%a, %b %d") }}</div>
+{% set ns = namespace(marked_next=false, any_events=false) %}
+{% for day in schedule.days %}
+  {% if day.events %}
+    {% set ns.any_events = true %}
+    <div class="gc-day-heading">{{ day.date.strftime("%d %b %Y")|upper }}</div>
     {% for item in day.events %}
-    <div class="schedule-event status-{{ item.status }}">
-      <span class="ev-time">{{ item.event.time.strftime("%H:%M") }}</span>
-      <span class="ev-name">{{ item.event.name }}</span>
-    </div>
-    {% else %}
-    <div class="schedule-empty">No events</div>
+      {% set is_next = (not ns.marked_next) and item.status != "past" %}
+      {% if is_next %}{% set ns.marked_next = true %}{% endif %}
+      <div class="sch-card{{ ' sch-card-next' if is_next else '' }}" data-open-overlay="ev-{{ item.event.event_id }}">
+        <div class="sch-card-name">{{ item.event.name }}</div>
+        <div class="sch-card-time">{{ item.event.time.strftime("%I:%M %p %d %b %Y") }}</div>
+        <div class="sch-card-tap">Tap for more</div>
+      </div>
+      <template id="ev-{{ item.event.event_id }}">
+        <div class="sch-ov-rule"></div>
+        <div class="sch-ov-audience">@all</div>
+        <div class="sch-ov-title">{{ item.event.name }}</div>
+        <div class="sch-ov-time">{{ item.event.time.strftime("%I:%M %p %d %b %Y") }}</div>
+        <div class="sch-ov-details-label">Details</div>
+        <div class="sch-ov-details">{{ item.event.description or "No additional details for this event." }}</div>
+        <div class="sch-ov-close">Tap to close</div>
+      </template>
     {% endfor %}
-  </div>
-  {% endfor %}
+  {% endif %}
+{% endfor %}
+{% if not ns.any_events %}
+  <div class="gc-empty-block">No events scheduled this week.</div>
+{% endif %}
+
+<div class="sch-overlay" id="sch-overlay">
+  <div class="sch-overlay-card" id="sch-overlay-card"></div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ asset_url('js/schedule.js') }}" defer></script>
 {% endblock %}

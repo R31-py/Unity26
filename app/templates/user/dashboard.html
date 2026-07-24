@@ -1,71 +1,51 @@
-{% extends "dashboard_base.html" %}
-{% import "_carousel_macros.html" as cx %}
+{% extends "dashboard_light_base.html" %}
+{% import "_grid_macros.html" as gm %}
 {% block title %}My Camp{% endblock %}
 
-{% block carousel_content %}
-<div data-live-key="messages,points" data-live-version="{{ messages_version }}|{{ points_version }}">
-<div class="cx-carousel-wrap" id="carouselWrap" tabindex="0" aria-label="Dashboard sections, use arrow keys to move">
-  <div class="cx-rail"></div>
-  <div class="cx-track js-pending" id="track">
+{% block grid_content %}
+<div class="gc-grid" data-live-key="messages,points" data-live-version="{{ messages_version }}|{{ points_version }}">
 
-    {% call cx.item("&#11041;", "Points", url_for('user.points_detail'),
-                    points.group.name if points else "No group yet",
-                    "Group points", initial_focus=true) %}
-      {% if points %}
-        <div class="cx-big-num">{{ points.total }}</div>
-        <div class="cx-row-chips">
-          {% for e in points.events[:2] %}
-            <span class="cx-pill {{ 'pos' if e.type == 1 else 'neg' }}">
-              {{ "+" if e.type == 1 else "-" }}{{ e.value }} {{ e.name }}
-            </span>
-          {% else %}
-            <span class="cx-pill blue">No entries yet</span>
-          {% endfor %}
-        </div>
-        <div class="cx-card-cta">View ledger &amp; ranks &rarr;</div>
-      {% else %}
-        <div class="cx-card-body">You haven't been assigned to a group yet — ask an Admin.</div>
-      {% endif %}
-    {% endcall %}
+  {% call gm.card("&#11041;", "Group", url_for('user.points_detail'),
+                  badge=((("+" if points.events[0].type == 1 else "-") ~ points.events[0].value) if points and points.events else none),
+                  badge_kind=("green" if points and points.events and points.events[0].type == 1 else "red")) %}
+    {% if points %}
+      <div class="gc-big-num">{{ points.total }}</div>
+      <div class="gc-card-caption">{{ points.group.name|upper }}</div>
+      {% set pct = 100 if points.total >= 100 else (points.total if points.total > 0 else 0) %}
+      <div class="gc-progress"><div class="gc-progress-fill" style="width: {{ pct }}%;"></div></div>
+    {% else %}
+      <div class="gc-card-empty">No group yet</div>
+    {% endif %}
+  {% endcall %}
 
-    {% call cx.item("&#10022;", "Messages", url_for('user.messages_detail'),
-                    "From Admin" ~ (" &middot; " ~ unread_message_count|string ~ " new" if unread_message_count else ""),
-                    messages[0].title if messages else "No messages yet",
-                    unread=unread_message_count > 0) %}
-      {% if messages %}
-        <div class="cx-card-body">{{ messages[0].content[:140] }}{{ "…" if messages[0].content|length > 140 else "" }}</div>
-      {% else %}
-        <div class="cx-card-body">Announcements from Admin will show up here.</div>
-      {% endif %}
-    {% endcall %}
+  {% call gm.card("&#8962;", "Room", url_for('user.room_detail')) %}
+    {% if room %}
+      <div class="gc-big-num">{{ room.room.number }}</div>
+    {% else %}
+      <div class="gc-card-empty">Not assigned</div>
+    {% endif %}
+  {% endcall %}
 
-    {% call cx.item("&#9711;", "Schedule", url_for('user.schedule_detail'),
-                    "Up next" if next_event else "This week",
-                    next_event.name if next_event else "No events scheduled") %}
-      {% if next_event %}
-        <div class="cx-mono-time">{{ next_event.time.strftime("%d %b &middot; %H:%M")|safe }}</div>
-        <div class="cx-row-chips"><span class="cx-pill blue">{{ next_event_relative }}</span></div>
-      {% else %}
-        <div class="cx-card-body">Nothing coming up this week yet.</div>
-      {% endif %}
-    {% endcall %}
+  {% call gm.card("&#9711;", "Schedule", url_for('user.schedule_detail'),
+                  small_hint="Tap for full schedule") %}
+    {% if next_event %}
+      <div class="gc-card-title">{{ next_event.name }}</div>
+      <div class="gc-card-caption">{{ next_event_relative }}</div>
+    {% else %}
+      <div class="gc-card-empty">No events scheduled</div>
+    {% endif %}
+  {% endcall %}
 
-    {% call cx.item("&#8962;", "Room", url_for('user.room_detail'),
-                    room.room.building.name if room else "Not yet assigned",
-                    ("Room " ~ room.room.number) if room else "No room yet") %}
-      {% if room %}
-        <div class="cx-card-sub">{{ room.roommates|length }} roommate{{ "s" if room.roommates|length != 1 else "" }}</div>
-        <div class="cx-avatars-row">
-          {% for rm in room.roommates[:4] %}
-            <div class="cx-mini-av">{{ rm.name[0] }}{{ (rm.surname or "")[0] }}</div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="cx-card-body">Ask an Admin to assign you a room.</div>
-      {% endif %}
-    {% endcall %}
+  {% call gm.card("&#10022;", "Messages", url_for('user.messages_detail'),
+                  badge=(unread_message_count if unread_message_count else none),
+                  badge_kind="red") %}
+    {% if messages %}
+      <div class="gc-card-title">{{ "New Messages" if unread_message_count else messages[0].title }}</div>
+      <div class="gc-card-caption">Tap to see</div>
+    {% else %}
+      <div class="gc-card-empty">No messages yet</div>
+    {% endif %}
+  {% endcall %}
 
-  </div>
-</div>
 </div>
 {% endblock %}

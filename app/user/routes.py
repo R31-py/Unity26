@@ -21,6 +21,7 @@ user_bp = Blueprint("user", __name__, url_prefix="/dashboard")
 @role_required(Role.USER)
 def dashboard():
     from app.live import compute_signal
+    from app.verses import verse_of_the_day
 
     points = get_points_summary(current_user)
     room = get_room_summary(current_user)
@@ -37,6 +38,7 @@ def dashboard():
         next_event_relative=next_event_relative,
         messages_version=compute_signal("messages", current_user),
         points_version=compute_signal("points", current_user),
+        verse=verse_of_the_day(),
     )
 
 
@@ -79,6 +81,7 @@ def messages_detail():
     return render_template(
         "user/messages_detail.html",
         messages=messages,
+        unread_message_count=get_unread_message_count(current_user),
         messages_version=compute_signal("messages", current_user),
     )
 

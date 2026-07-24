@@ -1,40 +1,38 @@
-{% extends "dashboard_base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}Messages{% endblock %}
 
-{% block subheader %}
-<div class="cx-back-row">
-  <a class="cx-back-link" href="{{ url_for('staff.dashboard') }}">&larr; Back</a>
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('staff.dashboard') }}">&larr; Back</a>
+  <span class="gc-page-title">Messages</span>
+  <span style="width:40px;"></span>
 </div>
 {% endblock %}
 
-{% block carousel_content %}
+{% block grid_content %}
 <div data-live-key="messages" data-live-version="{{ messages_version }}">
-<div class="cx-carousel-wrap" id="carouselWrap" tabindex="0" aria-label="Messages, use arrow keys to move">
-  <div class="cx-rail"></div>
-  <div class="cx-track js-pending" id="track">
-    {% for m in messages %}
-    <div class="cx-item"{% if loop.first %} data-initial-focus="true"{% endif %}>
-      <div class="cx-chip">
-        <span class="cx-chip-icon" aria-hidden="true">&#10022;</span>
-        <span class="cx-chip-label">{{ m.title }}</span>
-      </div>
-      <div class="cx-card">
-        <div class="cx-card-eyebrow">
-          {% if m.target_group %}{{ m.target_group.name }}{% else %}Everyone{% endif %}
-          &middot; {{ m.time.strftime("%b %d, %H:%M") }}
-        </div>
-        <div class="cx-card-title">{{ m.title }}</div>
-        <div class="cx-card-body">{{ m.content }}</div>
-      </div>
+{% set ns = namespace(last_day=none) %}
+{% for m in messages %}
+  {% set day = m.time.date() if m.time else none %}
+  {% if day != ns.last_day %}
+    {% set ns.last_day = day %}
+    <div class="gc-day-heading">{{ m.time.strftime("%d %b %Y")|upper if m.time else "UNDATED" }}</div>
+  {% endif %}
+  <div class="msg-card{{ ' msg-card-unread' if loop.index0 < unread_message_count else '' }}">
+    <div class="msg-card-head">
+      <span class="msg-card-time">{{ m.time.strftime("%I:%M %p") if m.time else "" }}</span>
+      <span class="msg-card-date">{{ m.time.strftime("%d %b")|upper if m.time else "" }}</span>
     </div>
-    {% endfor %}
+    <div class="msg-card-body">{{ m.content }}</div>
+    <div class="msg-card-rule"></div>
+    <div class="msg-card-foot">
+      <span>Sent to {{ ("@" ~ m.target_group.name) if m.target_group else "@all" }}</span>
+      {% if m.author %}<span>@{{ m.author.username }}</span>{% endif %}
+    </div>
+    <div class="msg-card-title">{{ m.title }}</div>
   </div>
-</div>
-{% if not messages %}
-<div class="cx-card" style="margin: 0 22px;">
-  <div class="cx-card-title">No messages yet</div>
-  <div class="cx-card-body">Announcements from Admin will show up here.</div>
-</div>
-{% endif %}
+{% else %}
+  <div class="gc-empty-block">No messages yet. Announcements from Admin will show up here.</div>
+{% endfor %}
 </div>
 {% endblock %}

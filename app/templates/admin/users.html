@@ -1,40 +1,40 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}Users{% endblock %}
-{% block content %}
-<div class="page-head-row">
-  <div class="page-head">
-    <div class="eyebrow">Admin · Manage</div>
-    <h1>Users</h1>
-    <p>Every account is provisioned here — there's no self-registration. Tap a card to edit it.</p>
-  </div>
-  <a class="btn btn-amber" href="{{ url_for('admin.user_new') }}">+ New user</a>
+
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('admin.dashboard') }}">&larr; Back</a>
+  <span class="gc-page-title">Users</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-action-row">
+  <a class="gc-btn-primary" href="{{ url_for('admin.user_new') }}">+ New user</a>
 </div>
 
-<div class="entity-grid">
-  {% for u in users %}
-  <div class="entity-card">
-    <a class="entity-card-link" href="{{ url_for('admin.user_edit', user_id=u.user_id) }}" aria-label="Edit {{ u.full_name }}"></a>
-    <div class="entity-card-top">
-      <div class="entity-card-name">{{ u.full_name }}</div>
-      <div class="entity-card-sub">@{{ u.username }}</div>
+{% for u in users %}
+<div class="grp-card">
+  <a class="grp-card-link" href="{{ url_for('admin.user_edit', user_id=u.user_id) }}" aria-label="Edit {{ u.full_name }}"></a>
+  <div class="grp-card-top">
+    <div style="min-width:0;">
+      <div class="grp-card-name">{{ u.full_name }}</div>
+      <div class="grp-card-sub">@{{ u.username }}</div>
     </div>
-    <div class="entity-card-meta">
-      <span class="badge badge-{{ u.role_enum.name.lower() }}">{{ u.role_enum.name.title() }}</span>
-      {% if u.group %}
-        <span class="badge badge-user"><span class="group-swatch" style="background:{{ u.group.color or '#999' }}"></span>{{ u.group.name }}</span>
-      {% endif %}
-      {% if u.room %}
-        <span class="badge badge-user">{{ u.room.building.name }} · {{ u.room.number }}</span>
-      {% endif %}
-    </div>
-    <form class="entity-card-delete" method="POST" action="{{ url_for('admin.user_delete', user_id=u.user_id) }}"
-          onsubmit="return confirm('Delete {{ u.full_name }}? This cannot be undone.');">
-      {{ delete_form.hidden_tag() }}
-      <button class="entity-card-delete-btn" type="submit" aria-label="Delete {{ u.full_name }}">&times;</button>
-    </form>
   </div>
-  {% else %}
-  <div class="entity-card-empty">No users yet — create the first Staff or User account.</div>
-  {% endfor %}
+  <div class="grp-card-meta">
+    <span class="grp-chip {{ 'chip-blue' if u.role_enum.name.lower() == 'admin' else ('chip-grey' if u.role_enum.name.lower() == 'staff' else 'chip-muted') }}">{{ u.role_enum.name.title() }}</span>
+    {% if u.group %}<span class="grp-chip chip-grey">{{ u.group.name }}</span>{% endif %}
+    {% if u.room %}<span class="grp-chip chip-muted">{{ u.room.building.name }} &middot; {{ u.room.number }}</span>{% endif %}
+  </div>
+  <form class="grp-card-delete" method="POST" action="{{ url_for('admin.user_delete', user_id=u.user_id) }}"
+        onsubmit="return confirm('Delete {{ u.full_name }}? This cannot be undone.');">
+    {{ delete_form.hidden_tag() }}
+    <button class="grp-card-delete-btn" type="submit" aria-label="Delete {{ u.full_name }}">&times;</button>
+  </form>
 </div>
+{% else %}
+<div class="grp-card-empty">No users yet — create the first Staff or User account.</div>
+{% endfor %}
 {% endblock %}

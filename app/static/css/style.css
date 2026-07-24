@@ -523,20 +523,12 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
    language matches nav-concept.html exactly (same tokens, same fonts).
    =========================================================================== */
 .carousel-page {
-  --cx-ink-950: #060d1b;
   --cx-ink-900: #0b1830;
-  --cx-panel: #0f2140;
   --cx-chip: #152c52;
-  --cx-chip-strong: #1c3a68;
   --cx-blue-500: #3b7cf6;
   --cx-blue-400: #5c93ff;
   --cx-blue-300: #8fb8ff;
-  --cx-ice: #f4f8ff;
-  --cx-ice-text: #0e1b33;
-  --cx-ice-muted: #5a6c8c;
   --cx-muted: #7c93be;
-  --cx-coral: #ff5d7a;
-  --cx-mint: #4fd6a8;
   --cx-line: rgba(143, 184, 255, 0.20);
 
   background: #030812;
@@ -591,61 +583,6 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 }
 .cx-avatar-btn:focus-visible { outline: 2px solid var(--cx-blue-300); outline-offset: 2px; }
 
-.cx-back-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-.cx-back-link { color: var(--cx-blue-300); font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
-
-/* --- vertical carousel --- */
-.cx-carousel-wrap { position: relative; flex: 1; margin-top: 6px; outline: none; touch-action: none; cursor: grab; min-height: 420px; }
-.cx-carousel-wrap.grabbing { cursor: grabbing; }
-.cx-rail { position: absolute; left: 26px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, transparent, var(--cx-line) 12%, var(--cx-line) 88%, transparent); z-index: 1; }
-.cx-track { position: absolute; inset: 0; }
-.cx-item { position: absolute; left: 50px; right: 22px; transition: transform .38s cubic-bezier(.22,.9,.32,1), opacity .32s ease, height .38s ease; cursor: pointer; }
-/* Default (pre-JS / no-JS): show the full card, hide the collapsed chip —
-   so the page is still readable if JS fails to load, just without the
-   carousel interaction. JS overrides these per-item via inline styles
-   once it initializes. */
-.cx-item .cx-chip { display: none; }
-.cx-item .cx-card { display: block; }
-.cx-track.js-pending .cx-item { position: static; margin-bottom: 14px; }
-.cx-track.dragging .cx-item, .cx-track.dragging .cx-dot { transition: none; }
-.cx-dot { position: absolute; left: 20px; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: var(--cx-chip-strong); transform: translate(-50%,-50%); transition: background .3s, box-shadow .3s, width .3s, height .3s; z-index: 2; }
-.cx-dot.focused { background: var(--cx-blue-400); width: 14px; height: 14px; box-shadow: 0 0 0 6px rgba(92,147,255,0.18), 0 0 14px rgba(92,147,255,0.55); animation: cx-pulse 2.2s ease-in-out infinite; }
-@keyframes cx-pulse { 0%,100% { box-shadow: 0 0 0 6px rgba(92,147,255,0.18),0 0 14px rgba(92,147,255,0.55); } 50% { box-shadow: 0 0 0 9px rgba(92,147,255,0.10),0 0 20px rgba(92,147,255,0.7); } }
-@media (prefers-reduced-motion: reduce) { .cx-dot.focused { animation: none; } }
-
-.cx-chip { height: 56px; border-radius: 16px; background: var(--cx-chip); border: 1px solid var(--cx-line); display: flex; align-items: center; gap: 10px; padding: 0 16px; }
-.cx-chip-label { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; color: #c9d8f5; }
-.cx-chip-icon { font-size: 15px; opacity: .8; }
-.cx-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cx-coral); box-shadow: 0 0 8px rgba(255,93,122,0.7); margin-left: auto; }
-
-.cx-card {
-  border-radius: 26px;
-  background: linear-gradient(165deg, var(--cx-ice), #e7effc);
-  padding: 24px;
-  box-shadow: 0 18px 40px rgba(4,10,25,0.45), 0 0 0 1px rgba(255,255,255,0.4) inset;
-  display: block; text-decoration: none; color: inherit;
-}
-.cx-item.cx-pressed .cx-chip, .cx-item.cx-pressed .cx-card { transform: scale(.96); filter: brightness(.96); }
-.cx-item.cx-drag-target .cx-chip, .cx-item.cx-drag-target .cx-card { outline: 2px solid var(--cx-blue-400); outline-offset: 5px; box-shadow: 0 0 0 1px rgba(92,147,255,0.3), 0 0 26px rgba(92,147,255,0.55); }
-
-.cx-card-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--cx-blue-500); font-weight: 600; }
-.cx-card-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; color: var(--cx-ice-text); margin-top: 6px; }
-.cx-card-sub { font-size: 13px; color: var(--cx-ice-muted); margin-top: 2px; }
-.cx-card-body { margin-top: 14px; font-size: 13px; color: #33456b; line-height: 1.55; }
-.cx-card-cta { margin-top: 16px; display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13px; color: #fff; background: var(--cx-blue-500); padding: 9px 16px; border-radius: 12px; }
-.cx-row-chips { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-.cx-pill { font-size: 12px; font-family: 'JetBrains Mono', monospace; padding: 5px 10px; border-radius: 10px; font-weight: 500; }
-.cx-pill.pos { background: #e3f9f0; color: #0d7a55; }
-.cx-pill.neg { background: #fde8ec; color: #c22a4c; }
-.cx-pill.blue { background: #e6f0ff; color: #1b53c4; }
-.cx-big-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 40px; color: var(--cx-ice-text); margin-top: 8px; }
-.cx-mono-time { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 19px; color: var(--cx-ice-text); letter-spacing: .02em; }
-.cx-avatars-row { display: flex; margin-top: 12px; flex-wrap: wrap; }
-.cx-mini-av { width: 32px; height: 32px; border-radius: 50%; background: var(--cx-blue-400); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 600; border: 2px solid var(--cx-ice); margin-left: -8px; }
-.cx-mini-av:first-child { margin-left: 0; }
-
-.cx-hint { text-align: center; font-size: 11px; color: #48598a; padding: 10px 0 18px; font-family: 'JetBrains Mono', monospace; letter-spacing: .06em; }
-
 /* --- avatar bottom sheet --- */
 .cx-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(4,9,20,0.55); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .cx-backdrop.open { opacity: 1; pointer-events: auto; }
@@ -665,10 +602,385 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 .cx-sheet-row-arrow { margin-left: auto; color: var(--cx-muted); font-size: 14px; }
 .cx-sheet-btn { width: 100%; text-align: left; font: inherit; }
 
-@media (max-width: 380px) {
-  .cx-item { left: 42px; }
-  .cx-rail { left: 20px; }
-  .cx-card { padding: 20px; }
-  .cx-card-title { font-size: 19px; }
-  .cx-big-num { font-size: 34px; }
+/* =====================================================================
+   Main-dashboard redesign (user/staff/admin home screens only).
+   Static header + verse card + card grid — replaces the old vertical
+   drag-carousel for these three pages. Everything else in the app
+   (detail pages, admin CRUD tables, auth) is untouched and keeps using
+   the .cx-* dark theme above; this block is scoped under body.gc-body
+   so it can never leak onto other pages.
+   ===================================================================== */
+:root {
+  --gc-orange: #f2620f;
+  --gc-orange-dark: #d94f06;
+  --gc-bg: #e7e7ea;
+  --gc-card: #ffffff;
+  --gc-ink: #1b1b1f;
+  --gc-muted: #8a8a92;
+  --gc-red: #e53a3a;
+  --gc-green: #2eae66;
+  --gc-blue: #2f6fed;
 }
+
+body.gc-body { background: var(--gc-bg); color: var(--gc-ink); font-family: var(--font-body); }
+
+.gc-page { max-width: 480px; margin: 0 auto; padding: 18px 16px 32px; min-height: 100vh; }
+
+/* --- header: white rounded card, avatar + name/username left, clock right --- */
+.gc-header {
+  background: var(--gc-card);
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 24px rgba(20,20,30,0.06);
+  margin-bottom: 14px;
+}
+.gc-header-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.gc-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.gc-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--gc-orange); color: #fff;
+  border: none; cursor: pointer;
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.gc-avatar:focus-visible { outline: 2px solid var(--gc-orange-dark); outline-offset: 2px; }
+.gc-id-text { min-width: 0; }
+.gc-id-name { font-family: var(--font-display); font-weight: 700; font-size: 13px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gc-id-handle { font-size: 12px; color: var(--gc-muted); }
+.gc-clock { font-family: var(--font-display); font-weight: 700; font-size: 26px; white-space: nowrap; flex-shrink: 0; }
+.gc-clock-ampm { font-size: 13px; font-weight: 600; color: var(--gc-muted); margin-left: 2px; }
+
+/* --- verse card --- */
+.gc-verse {
+  background: linear-gradient(165deg, #f5893a, var(--gc-orange-dark));
+  border-radius: 22px;
+  padding: 22px 20px 26px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 16px;
+  box-shadow: 0 14px 30px rgba(217,79,6,0.28);
+}
+.gc-verse-date {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  white-space: pre-line;
+  opacity: .95;
+  margin-bottom: 14px;
+}
+.gc-verse-text { font-family: var(--font-display); font-weight: 600; font-size: 17px; line-height: 1.45; }
+.gc-verse-ref { margin-top: 14px; font-weight: 700; font-size: 14px; }
+
+/* --- card grid --- */
+.gc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.gc-card {
+  background: var(--gc-card);
+  border-radius: 20px;
+  padding: 16px;
+  min-height: 118px;
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  box-shadow: 0 10px 22px rgba(20,20,30,0.06);
+  position: relative;
+}
+.gc-card-wide { grid-column: 1 / -1; }
+.gc-card-head { display: flex; align-items: center; gap: 6px; }
+.gc-card-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gc-orange); font-size: 0; display: inline-block; flex-shrink: 0; }
+.gc-card-dot::before { content: ""; }
+.gc-card-label { font-size: 12px; font-weight: 600; color: var(--gc-muted); }
+.gc-card-hint { font-size: 10px; color: var(--gc-muted); margin-left: auto; text-align: right; }
+.gc-badge {
+  margin-left: auto; font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px; color: #fff;
+}
+.gc-badge-green { background: var(--gc-green); }
+.gc-badge-red { background: var(--gc-red); }
+.gc-badge-blue { background: var(--gc-blue); }
+.gc-big-num { font-family: var(--font-display); font-weight: 700; font-size: 34px; margin-top: 8px; color: var(--gc-orange); }
+.gc-card-caption { font-size: 12px; color: var(--gc-muted); margin-top: 4px; font-weight: 600; }
+.gc-card-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; margin-top: 10px; line-height: 1.3; }
+.gc-card-empty { font-size: 12px; color: var(--gc-muted); margin-top: 10px; line-height: 1.5; }
+.gc-progress { height: 6px; border-radius: 4px; background: #f1e3da; margin-top: 10px; overflow: hidden; }
+.gc-progress-fill { height: 100%; background: var(--gc-red); border-radius: 4px; }
+.gc-row-chips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.gc-pill { font-size: 11px; font-family: var(--font-mono); font-weight: 600; padding: 4px 9px; border-radius: 10px; background: #fde8ec; color: var(--gc-red); }
+
+@media (max-width: 360px) {
+  .gc-page { padding: 14px 12px 28px; }
+  .gc-clock { font-size: 22px; }
+  .gc-big-num { font-size: 28px; }
+}
+
+/* =====================================================================
+   Schedule page + event overlay (Step 2 of the redesign) — light card
+   list grouped by day, tapping a card opens a full-detail overlay.
+   Scoped under body.gc-body alongside the dashboard grid styles above.
+   ===================================================================== */
+.gc-back-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.gc-back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-display); font-weight: 600; font-size: 13px;
+  color: var(--gc-orange); text-decoration: none;
+}
+.gc-page-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+
+.gc-week-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
+.gc-week-btn {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--gc-ink); background: var(--gc-card); border-radius: 12px;
+  padding: 8px 12px; text-decoration: none; box-shadow: 0 6px 16px rgba(20,20,30,0.06);
+}
+.gc-week-label { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--gc-muted); text-align: center; }
+
+.gc-day-heading {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  letter-spacing: .05em; color: var(--gc-orange); text-align: center;
+  margin: 18px 0 10px;
+}
+.gc-day-heading:first-of-type { margin-top: 0; }
+
+.sch-card {
+  background: var(--gc-card); border-radius: 18px; padding: 16px 18px;
+  margin-bottom: 12px; text-align: center; cursor: pointer;
+  box-shadow: 0 8px 20px rgba(20,20,30,0.06);
+  border-left: 4px solid transparent;
+}
+.sch-card.sch-card-next { border-left-color: var(--gc-orange); }
+.sch-card-name { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--gc-muted); text-transform: uppercase; }
+.sch-card-time { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-top: 8px; }
+.sch-card-tap { font-size: 12px; color: var(--gc-muted); margin-top: 8px; }
+.gc-empty-block { text-align: center; color: var(--gc-muted); font-size: 13px; padding: 30px 10px; }
+
+.sch-overlay {
+  position: fixed; inset: 0; z-index: 60; background: rgba(20,20,30,0.45);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity .2s ease;
+}
+.sch-overlay.open { opacity: 1; pointer-events: auto; }
+.sch-overlay-card {
+  width: 100%; max-width: 420px; background: var(--gc-card); border-radius: 22px;
+  padding: 26px 24px; text-align: center; cursor: pointer;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+  transform: translateY(10px); transition: transform .2s ease;
+}
+.sch-overlay.open .sch-overlay-card { transform: translateY(0); }
+.sch-ov-rule { height: 3px; width: 56px; background: var(--gc-orange); border-radius: 3px; margin: 0 auto 16px; }
+.sch-ov-audience { font-size: 12px; font-weight: 700; color: var(--gc-ink); }
+.sch-ov-title { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-top: 8px; }
+.sch-ov-time { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--gc-orange); margin-top: 10px; }
+.sch-ov-details-label { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-top: 20px; }
+.sch-ov-details { font-size: 13px; color: var(--gc-muted); line-height: 1.6; margin-top: 8px; }
+.sch-ov-close { font-size: 12px; color: var(--gc-muted); margin-top: 20px; }
+
+/* =====================================================================
+   Messages page (Step 3 of the redesign) — light card feed grouped by
+   day, matching the Schedule page's visual language.
+   ===================================================================== */
+.msg-card {
+  background: var(--gc-card); border-radius: 18px; padding: 16px 18px;
+  margin-bottom: 12px; box-shadow: 0 8px 20px rgba(20,20,30,0.06);
+}
+.msg-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.msg-card-time { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.msg-card-date { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--gc-muted); letter-spacing: .04em; }
+.msg-card-body { font-size: 13px; color: #4a4a52; line-height: 1.6; margin-top: 10px; }
+.msg-card-rule { height: 1px; background: #ececef; margin: 14px 0 10px; }
+.msg-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11px; color: var(--gc-muted); font-family: var(--font-mono); }
+.msg-card-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; text-align: center; margin-top: 12px; }
+.msg-card-unread { border-left: 4px solid var(--gc-orange); }
+
+/* =====================================================================
+   Groups page (Step 4 of the redesign) — light card-per-group leaderboard,
+   replacing the old dark .entity-card table-ish list. Matches the visual
+   language of Schedule/Messages (white rounded cards, orange accents).
+   ===================================================================== */
+.gc-action-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.gc-action-row > * { flex: 1; }
+.gc-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; background: var(--gc-orange); color: #fff; text-decoration: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  border-radius: 16px; padding: 13px 16px; box-shadow: 0 10px 22px rgba(242,98,15,0.28);
+}
+.gc-btn-primary:hover { background: var(--gc-orange-dark); }
+.gc-btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; background: var(--gc-card); color: var(--gc-orange); text-decoration: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  border-radius: 16px; padding: 13px 16px; box-shadow: 0 8px 20px rgba(20,20,30,0.06);
+  border: 1px solid rgba(242,98,15,0.3);
+}
+.gc-btn-secondary:hover { background: #fff7f2; }
+
+.grp-card {
+  position: relative;
+  background: var(--gc-card); border-radius: 18px; padding: 16px 18px;
+  margin-bottom: 12px; box-shadow: 0 8px 20px rgba(20,20,30,0.06);
+}
+.grp-card-link { position: absolute; inset: 0; z-index: 1; border-radius: 18px; }
+.grp-card-link:focus-visible { outline: 2px solid var(--gc-orange-dark); outline-offset: 2px; }
+.grp-card-top { display: flex; align-items: center; gap: 10px; padding-right: 26px; position: relative; z-index: 0; }
+.grp-swatch { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 3px rgba(20,20,30,0.05); }
+.grp-rank {
+  font-family: var(--font-mono); font-weight: 700; font-size: 11px; color: var(--gc-muted);
+  flex-shrink: 0;
+}
+.grp-card-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grp-card-sub { font-size: 12px; color: var(--gc-muted); margin-top: 4px; }
+.grp-card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; position: relative; z-index: 2; pointer-events: none; }
+.grp-chip {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px; color: #fff;
+}
+.grp-chip-points { background: var(--gc-orange); }
+.grp-chip-rewards { background: var(--gc-green); }
+.grp-chip-penalties { background: var(--gc-red); }
+.grp-card-delete { position: absolute; top: 12px; right: 12px; z-index: 3; margin: 0; }
+.grp-card-delete-btn {
+  width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(229,58,58,0.1); color: var(--gc-red);
+  font-size: 16px; line-height: 1; display: flex; align-items: center; justify-content: center;
+}
+.grp-card-delete-btn:hover { background: rgba(229,58,58,0.2); }
+.grp-card-empty { text-align: center; color: var(--gc-muted); font-size: 13px; padding: 30px 10px; }
+
+/* =====================================================================
+   Rooms page (Step 5 of the redesign) — light card-per-room treatment,
+   grouped under building headings, roommates shown as small name cards.
+   ===================================================================== */
+.rm-building-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 20px 0 10px; }
+.rm-building-head:first-of-type { margin-top: 0; }
+.rm-building-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--gc-ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rm-building-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.rm-building-actions form { margin: 0; }
+.rm-building-edit-link { font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--gc-orange); text-decoration: none; }
+.rm-building-delete-btn {
+  width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(229,58,58,0.1); color: var(--gc-red);
+  font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;
+}
+.rm-building-delete-btn:hover { background: rgba(229,58,58,0.2); }
+
+.room-card {
+  position: relative;
+  background: var(--gc-card); border-radius: 18px; padding: 16px 18px;
+  margin-bottom: 12px; box-shadow: 0 8px 20px rgba(20,20,30,0.06);
+}
+.room-card-link { position: absolute; inset: 0; z-index: 1; border-radius: 18px; }
+.room-card-link:focus-visible { outline: 2px solid var(--gc-orange-dark); outline-offset: 2px; }
+.room-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-right: 26px; position: relative; z-index: 0; }
+.room-card-name { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+.room-card-sub { font-size: 12px; color: var(--gc-muted); margin-top: 2px; }
+.room-badge { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; color: #fff; flex-shrink: 0; }
+.room-badge-open { background: var(--gc-green); }
+.room-badge-full { background: var(--gc-red); }
+.room-card-mates { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; position: relative; z-index: 2; pointer-events: none; }
+.room-mate-card {
+  font-size: 11.5px; font-weight: 600; color: var(--gc-ink);
+  background: #f1f1f4; padding: 4px 10px; border-radius: 14px;
+}
+.room-card-empty { text-align: center; color: var(--gc-muted); font-size: 12px; padding: 10px; }
+.rm-block-empty { text-align: center; color: var(--gc-muted); font-size: 13px; padding: 30px 10px; }
+
+/* =====================================================================
+   Points detail + Room detail pages (Step 6 of the redesign) — light
+   theme for the user/staff "my group" and "my room" detail views,
+   matching the card language used everywhere else.
+   ===================================================================== */
+.pts-total-card {
+  background: var(--gc-card); border-radius: 20px; padding: 22px 20px;
+  text-align: center; box-shadow: 0 10px 22px rgba(20,20,30,0.06); margin-bottom: 18px;
+}
+.pts-total-num { font-family: var(--font-display); font-weight: 700; font-size: 40px; color: var(--gc-orange); }
+.pts-total-label { font-size: 13px; color: var(--gc-muted); margin-top: 4px; font-weight: 600; }
+
+.pts-event-card {
+  background: var(--gc-card); border-radius: 16px; padding: 14px 16px;
+  margin-bottom: 10px; box-shadow: 0 8px 20px rgba(20,20,30,0.06);
+  border-left: 4px solid transparent;
+}
+.pts-event-reward { border-left-color: var(--gc-green); }
+.pts-event-penalty { border-left-color: var(--gc-red); }
+.pts-event-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.pts-event-name { font-family: var(--font-display); font-weight: 700; font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pts-event-value { font-family: var(--font-mono); font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.pts-event-value-pos { color: var(--gc-green); }
+.pts-event-value-neg { color: var(--gc-red); }
+.pts-event-desc { font-size: 12px; color: #4a4a52; margin-top: 6px; line-height: 1.5; }
+.pts-event-foot { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; color: var(--gc-muted); font-family: var(--font-mono); margin-top: 8px; }
+
+.pts-rank-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--gc-card); border-radius: 14px; padding: 10px 14px;
+  margin-bottom: 8px; box-shadow: 0 6px 16px rgba(20,20,30,0.06);
+}
+.pts-rank-mine { box-shadow: 0 0 0 2px var(--gc-orange), 0 6px 16px rgba(20,20,30,0.06); }
+.pts-rank-num { font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--gc-muted); width: 22px; flex-shrink: 0; }
+.pts-rank-swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.pts-rank-name { font-family: var(--font-display); font-weight: 700; font-size: 13px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pts-you-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: #fff; background: var(--gc-orange); padding: 2px 7px; border-radius: 10px; margin-left: 6px; flex-shrink: 0; }
+.pts-rank-pts { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--gc-orange); flex-shrink: 0; }
+.pts-rank-meta { font-family: var(--font-mono); font-size: 10px; color: var(--gc-muted); flex-shrink: 0; }
+
+.rmd-mate-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--gc-card); border-radius: 14px; padding: 12px 14px;
+  margin-bottom: 8px; box-shadow: 0 6px 16px rgba(20,20,30,0.06);
+}
+.rmd-mate-name { font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+.rmd-mate-group { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gc-muted); flex-shrink: 0; }
+
+/* =====================================================================
+   Admin Points & Penalties page (Step 7 of the redesign) — reuses the
+   pts-event-card ledger style from the user/staff Points detail pages,
+   plus a reusable inline delete-icon button for admin CRUD cards that
+   aren't a single full-card link (entry has separate Edit + Delete).
+   ===================================================================== */
+.gc-icon-delete-btn {
+  width: 24px; height: 24px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(229,58,58,0.1); color: var(--gc-red);
+  font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.gc-icon-delete-btn:hover { background: rgba(229,58,58,0.2); }
+.pts-event-group { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gc-muted); margin-top: 8px; }
+.pts-event-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+.pts-event-actions form { margin: 0; }
+.pts-event-edit-link { font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--gc-orange); text-decoration: none; }
+
+/* =====================================================================
+   Users (step 8), Events (step 9), Requests (step 10) — reuse grp-card /
+   msg-card / pts-event-card / gc-week-btn patterns; only genuinely new
+   bits get their own classes below.
+   ===================================================================== */
+.chip-blue { background: var(--gc-blue); }
+.chip-grey { background: #6b6b74; }
+.chip-muted { background: #b8b8c0; }
+
+.evt-card-time { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--gc-orange); margin-top: 6px; }
+.evt-card-badges { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.evt-badge-sent { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; background: var(--gc-green); color: #fff; }
+
+.req-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.req-tab {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  color: var(--gc-ink); background: var(--gc-card); border-radius: 12px;
+  padding: 8px 14px; text-decoration: none; box-shadow: 0 6px 16px rgba(20,20,30,0.06);
+}
+.req-tab-active { background: var(--gc-orange); color: #fff; }
+.req-status-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; color: #fff; }
+.req-status-pending { background: var(--gc-blue); }
+.req-status-approved { background: var(--gc-green); }
+.req-status-rejected { background: var(--gc-red); }
+.req-card-body { font-size: 12.5px; color: #4a4a52; line-height: 1.6; margin-top: 8px; }
+.req-actions { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.req-actions form { margin: 0; }
+.req-reject-summary { font-family: var(--font-display); font-weight: 600; font-size: 12px; color: var(--gc-muted); cursor: pointer; }
+.req-reject-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.req-reject-form textarea {
+  font-family: var(--font-body); font-size: 12.5px; border-radius: 10px;
+  border: 1px solid #e2e2e6; padding: 8px 10px; resize: vertical;
+}
+.req-reviewed { font-size: 11px; color: var(--gc-muted); margin-top: 10px; }

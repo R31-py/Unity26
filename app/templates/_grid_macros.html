@@ -1,0 +1,12 @@
+{% macro card(icon, label, href, badge=none, badge_kind="green", small_hint=none, wide=false, unread=false) %}
+<a class="gc-card{{ ' gc-card-wide' if wide else '' }}" href="{{ href }}">
+  <div class="gc-card-head">
+    <span class="gc-card-dot" aria-hidden="true">{{ icon }}</span>
+    <span class="gc-card-label">{{ label }}</span>
+    {% if badge %}<span class="gc-badge gc-badge-{{ badge_kind }}">{{ badge }}</span>{% endif %}
+    {% if unread and not badge %}<span class="gc-badge gc-badge-red">&#8226;</span>{% endif %}
+  </div>
+  {% if small_hint %}<div class="gc-card-hint">{{ small_hint }}</div>{% endif %}
+  {{ caller() }}
+</a>
+{% endmacro %}

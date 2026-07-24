@@ -595,11 +595,15 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 .cx-back-link { color: var(--cx-blue-300); font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
 
 /* --- vertical carousel --- */
-.cx-carousel-wrap { position: relative; flex: 1; margin-top: 6px; outline: none; touch-action: none; cursor: grab; min-height: 50%; }
+.cx-carousel-wrap { position: relative; flex: 1; margin-top: 6px; outline: none; touch-action: none; cursor: grab; min-height: 420px; }
 .cx-carousel-wrap.grabbing { cursor: grabbing; }
 .cx-rail { position: absolute; left: 26px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, transparent, var(--cx-line) 12%, var(--cx-line) 88%, transparent); z-index: 1; }
-.cx-track { position: absolute; inset: 0; min-height: 100vh; }
+.cx-track { position: absolute; inset: 0; }
 .cx-item { position: absolute; left: 50px; right: 22px; transition: transform .38s cubic-bezier(.22,.9,.32,1), opacity .32s ease, height .38s ease; cursor: pointer; }
+/* Default (pre-JS / no-JS): show the full card, hide the collapsed chip —
+   so the page is still readable if JS fails to load, just without the
+   carousel interaction. JS overrides these per-item via inline styles
+   once it initializes. */
 .cx-item .cx-chip { display: none; }
 .cx-item .cx-card { display: block; }
 .cx-track.js-pending .cx-item { position: static; margin-bottom: 14px; }

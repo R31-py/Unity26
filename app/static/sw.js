@@ -9,7 +9,7 @@
 //      isn't in an open tab.
 //
 // Bump this on any change below so clients pick up the new worker.
-const CACHE_NAME = "camp-points-shell-v1";
+const CACHE_NAME = "camp-points-shell-v2";
 
 const APP_SHELL = [
   "/",

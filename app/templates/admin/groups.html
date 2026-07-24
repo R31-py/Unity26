@@ -1,37 +1,43 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}Groups{% endblock %}
-{% block content %}
-<div class="page-head-row">
-  <div class="page-head">
-    <div class="eyebrow">Admin · Manage</div>
-    <h1>Groups</h1>
-    <p>Ranked by current points — same ranking members see on their own dashboards. Tap a card to edit it.</p>
-  </div>
-  <a class="btn btn-amber" href="{{ url_for('admin.group_new') }}">+ New group</a>
+
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('admin.dashboard') }}">&larr; Back</a>
+  <span class="gc-page-title">Groups</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-action-row">
+  <a class="gc-btn-primary" href="{{ url_for('admin.group_new') }}">+ New group</a>
 </div>
 
-<div class="entity-grid">
-  {% for row in leaderboard %}
-  {% set g = row.group %}
-  <div class="entity-card">
-    <a class="entity-card-link" href="{{ url_for('admin.group_edit', group_id=g.group_id) }}" aria-label="Edit {{ g.name }}"></a>
-    <div class="entity-card-top">
-      <div class="entity-card-name"><span class="group-swatch" style="background:{{ g.color or '#999' }}"></span>#{{ row.rank }} · {{ g.name }}</div>
-      <div class="entity-card-sub">{{ g.users|length }} member{{ "" if g.users|length == 1 else "s" }} · {{ g.color or "no color set" }}</div>
+{% for row in leaderboard %}
+{% set g = row.group %}
+<div class="grp-card">
+  <a class="grp-card-link" href="{{ url_for('admin.group_edit', group_id=g.group_id) }}" aria-label="Edit {{ g.name }}"></a>
+  <div class="grp-card-top">
+    <span class="grp-rank">#{{ row.rank }}</span>
+    <span class="grp-swatch" style="background:{{ g.color or '#999' }}"></span>
+    <div style="min-width:0;">
+      <div class="grp-card-name">{{ g.name }}</div>
+      <div class="grp-card-sub">{{ g.users|length }} member{{ "" if g.users|length == 1 else "s" }} &middot; {{ g.color or "no color set" }}</div>
     </div>
-    <div class="entity-card-meta">
-      <span class="badge badge-ok">{{ g.points }} pts</span>
-      <span class="badge badge-user">{{ row.reward_count }} rewards</span>
-      <span class="badge badge-full">{{ row.penalty_count }} penalties</span>
-    </div>
-    <form class="entity-card-delete" method="POST" action="{{ url_for('admin.group_delete', group_id=g.group_id) }}"
-          onsubmit="return confirm('Delete group {{ g.name }}? Members will just be unassigned, not deleted.');">
-      {{ delete_form.hidden_tag() }}
-      <button class="entity-card-delete-btn" type="submit" aria-label="Delete {{ g.name }}">&times;</button>
-    </form>
   </div>
-  {% else %}
-  <div class="entity-card-empty">No groups yet.</div>
-  {% endfor %}
+  <div class="grp-card-meta">
+    <span class="grp-chip grp-chip-points">{{ g.points }} pts</span>
+    <span class="grp-chip grp-chip-rewards">{{ row.reward_count }} rewards</span>
+    <span class="grp-chip grp-chip-penalties">{{ row.penalty_count }} penalties</span>
+  </div>
+  <form class="grp-card-delete" method="POST" action="{{ url_for('admin.group_delete', group_id=g.group_id) }}"
+        onsubmit="return confirm('Delete group {{ g.name }}? Members will just be unassigned, not deleted.');">
+    {{ delete_form.hidden_tag() }}
+    <button class="grp-card-delete-btn" type="submit" aria-label="Delete {{ g.name }}">&times;</button>
+  </form>
 </div>
+{% else %}
+<div class="grp-card-empty">No groups yet.</div>
+{% endfor %}
 {% endblock %}

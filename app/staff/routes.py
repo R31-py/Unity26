@@ -24,6 +24,7 @@ staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
 @role_required(Role.STAFF)
 def dashboard():
     from app.live import compute_signal
+    from app.verses import verse_of_the_day
 
     points = get_points_summary(current_user)
     room = get_room_summary(current_user)
@@ -45,6 +46,7 @@ def dashboard():
         messages_version=compute_signal("messages", current_user),
         points_version=compute_signal("points", current_user),
         requests_version=compute_signal("requests", current_user),
+        verse=verse_of_the_day(),
     )
 
 
@@ -85,6 +87,7 @@ def messages_detail():
     return render_template(
         "staff/messages_detail.html",
         messages=messages,
+        unread_message_count=get_unread_message_count(current_user),
         messages_version=compute_signal("messages", current_user),
     )
 

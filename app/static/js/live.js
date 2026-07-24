@@ -68,35 +68,8 @@
         const current = document.querySelector(selector);
         if (!fresh || !current) return;
 
-        // If the user is mid-drag on a carousel inside this container,
-        // swapping the DOM out from under them would orphan the pointer
-        // capture the drag holds (the element it was set on is gone), so
-        // the browser never fires pointerup/pointercancel and the page is
-        // left stuck as if still dragging. Leave it alone this cycle —
-        // the next poll will pick up the change once the drag ends.
-        const draggingWrap = current.querySelector(".cx-carousel-wrap.grabbing");
-        if (draggingWrap) return;
-
-        // Remember which card (if any) is currently focused in each
-        // carousel here, by position, so the swap-in below can restore it
-        // instead of always snapping back to the first card.
-        const focusIndexByWrap = Array.from(current.querySelectorAll(".cx-carousel-wrap")).map((wrap) => {
-          const items = Array.from(wrap.querySelectorAll(".cx-item"));
-          const idx = items.findIndex((el) => el.classList.contains("cx-focused"));
-          return idx;
-        });
-
         current.replaceWith(fresh);
         knownVersions[key] = fresh.getAttribute("data-live-version") || "";
-
-        // Swapped-in markup is brand new DOM — any carousel inside it
-        // needs its listeners re-wired (see carousel.js).
-        if (typeof window.reinitCarousel === "function") {
-          fresh.querySelectorAll(".cx-carousel-wrap").forEach((wrap, i) => {
-            const focusIndex = focusIndexByWrap[i];
-            window.reinitCarousel(wrap, focusIndex >= 0 ? { focusIndex } : undefined);
-          });
-        }
       });
     } catch (err) {
       console.warn("Live refresh failed:", err);

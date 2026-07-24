@@ -57,24 +57,7 @@
 
     function layout(liveOffset, dragTargetIndex) {
       liveOffset = liveOffset || 0;
-      var focusedH = 190, chipH = 56, gap = 30;
-      var topGutter = 32, bottomGutter = 20;
-
-      // How far the stack reaches above/below the focused item's center,
-      // in px, so every item gets a slot — nothing past ±2 gets hidden
-      // anymore, so the container has to actually be tall enough for the
-      // full list, not just a fixed "looks about right" height.
-      function reach(count) {
-        return count > 0
-          ? focusedH / 2 + gap + (chipH + gap) * (count - 1) + chipH / 2
-          : focusedH / 2;
-      }
-      var above = reach(focusIndex);
-      var below = reach(items.length - 1 - focusIndex);
-      var centerY = topGutter + above;
-      var wrapHeight = topGutter + above + below + bottomGutter;
-
-      wrap.style.minHeight = "80%";
+      var focusedH = 190, chipH = 56, gap = 14;
 
       items.forEach(function (el, i) {
         var dist = i - focusIndex;
@@ -87,18 +70,17 @@
           var dir = dist > 0 ? 1 : -1;
           var d = Math.abs(dist);
           offset = dir * (focusedH / 2 + gap + (chipH + gap) * (d - 1) + chipH / 2);
-          // Every chip stays visible and tappable — distance only softens
-          // it a little for visual hierarchy, it never disappears.
-          opacity = Math.max(0.55, 0.95 - (d - 1) * 0.12);
+          opacity = d === 1 ? 0.85 : (d === 2 ? 0.4 : 0);
           height = chipH;
         }
+        offset += liveOffset;
 
-        el.style.top = (centerY + offset + liveOffset) + "px";
+        el.style.top = "50%";
         el.style.height = height + "px";
-        el.style.transform = "translateY(-50%)";
+        el.style.transform = "translate(0,-50%) translateY(" + offset + "px)";
         el.style.opacity = opacity;
         el.style.zIndex = isFocused ? 3 : (2 - Math.min(Math.abs(dist), 2));
-        el.style.pointerEvents = "auto";
+        el.style.pointerEvents = opacity < 0.05 ? "none" : "auto";
         el.classList.toggle("cx-focused", isFocused);
         el.classList.toggle("cx-drag-target", dragTargetIndex === i);
 
@@ -108,8 +90,8 @@
         if (card) card.style.display = isFocused ? "block" : "none";
 
         var dot = dots[i];
-        dot.style.top = (centerY + offset + liveOffset) + "px";
-        dot.style.opacity = opacity < 0.6 ? 0.6 : 1;
+        dot.style.top = "calc(50% + " + offset + "px)";
+        dot.style.opacity = opacity < 0.15 ? 0.15 : 1;
         dot.classList.toggle("focused", isFocused);
       });
     }

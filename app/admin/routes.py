@@ -72,6 +72,7 @@ def dashboard():
         "pending_by_type": pending_by_type,
     }
     from app.live import compute_signal
+    from app.verses import verse_of_the_day
 
     return render_template(
         "admin/dashboard.html",
@@ -79,6 +80,7 @@ def dashboard():
         messages_version=compute_signal("messages", current_user),
         points_version=compute_signal("points", current_user),
         requests_version=compute_signal("requests", current_user),
+        verse=verse_of_the_day(),
     )
 
 

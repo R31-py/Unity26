@@ -42,6 +42,10 @@
         </div>
       </div>
 
+      {# ---- Section tabs: replaces the old sidebar. A small, horizontally
+         swipeable strip of the same section chips used on the Overview
+         carousel, so every page keeps the same "carousel" navigation
+         language without a hamburger menu. ---- #}
       <nav class="section-tabs" aria-label="Sections">
         {% if current_user.is_admin %}
           <a class="section-tab{% if request.endpoint == 'admin.dashboard' %} active{% endif %}" href="{{ url_for('admin.dashboard') }}"><span aria-hidden="true">&#9670;</span> Overview</a>
