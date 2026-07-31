@@ -14,11 +14,29 @@ registered in app/__init__.py) instead of calling `.strftime()` directly
 on a stored datetime.
 """
 
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from flask import current_app
 
 UTC = ZoneInfo("UTC")
+
+
+def _camp_zone():
+    """Resolve CAMP_TIMEZONE to a ZoneInfo, falling back to UTC (and
+    logging a warning) if it's missing/misspelled — e.g. "Albania/Tirana"
+    isn't a real IANA key, the correct one is "Europe/Tirane" — so a typo'd
+    env var degrades to "times are in UTC" instead of a 500 on every page
+    that displays one."""
+    tz_name = current_app.config.get("CAMP_TIMEZONE", "UTC")
+    try:
+        return ZoneInfo(tz_name)
+    except ZoneInfoNotFoundError:
+        current_app.logger.warning(
+            "CAMP_TIMEZONE=%r is not a valid IANA timezone name — falling back to UTC. "
+            "Check https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for the correct key.",
+            tz_name,
+        )
+        return UTC
 
 
 def to_local(dt):
@@ -29,8 +47,7 @@ def to_local(dt):
         return None
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=UTC)
-    tz_name = current_app.config.get("CAMP_TIMEZONE", "UTC")
-    return dt.astimezone(ZoneInfo(tz_name))
+    return dt.astimezone(_camp_zone())
 
 
 def local_date(dt):
@@ -55,8 +72,7 @@ def local_naive_to_utc_naive(local_dt):
     for an arbitrary time-of-day instead of midnight."""
     if local_dt is None:
         return None
-    tz_name = current_app.config.get("CAMP_TIMEZONE", "UTC")
-    aware_local = local_dt.replace(tzinfo=ZoneInfo(tz_name))
+    aware_local = local_dt.replace(tzinfo=_camp_zone())
     return aware_local.astimezone(UTC).replace(tzinfo=None)
 
 
@@ -66,8 +82,7 @@ def local_midnight_to_utc_naive(local_date_value):
     — i.e. the right value to compare against a stored (naive-UTC)
     DateTime column in a query, such as "give me all events on this
     local day"."""
-    tz_name = current_app.config.get("CAMP_TIMEZONE", "UTC")
     from datetime import datetime as _datetime
 
-    local_midnight = _datetime.combine(local_date_value, _datetime.min.time(), tzinfo=ZoneInfo(tz_name))
+    local_midnight = _datetime.combine(local_date_value, _datetime.min.time(), tzinfo=_camp_zone())
     return local_midnight.astimezone(UTC).replace(tzinfo=None)

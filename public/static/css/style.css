@@ -647,7 +647,7 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 .cx-hint { text-align: center; font-size: 11px; color: #48598a; padding: 10px 0 18px; font-family: 'JetBrains Mono', monospace; letter-spacing: .06em; }
 
 /* --- avatar bottom sheet --- */
-.cx-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(4,9,20,0.85); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.cx-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(4,9,20,0.55); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .cx-backdrop.open { opacity: 1; pointer-events: auto; }
 .cx-sheet { width: 100%; max-width: 480px; background: var(--cx-ink-900); border-top: 1px solid var(--cx-line); border-radius: 26px 26px 0 0; padding: 22px 22px max(22px, env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform .3s cubic-bezier(.22,.9,.32,1); }
 .cx-backdrop.open .cx-sheet { transform: translateY(0); }
