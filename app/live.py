@@ -21,7 +21,7 @@ doesn't matter as long as it changes whenever the underlying data does.
 
 from flask import Blueprint, jsonify
 from flask_login import login_required, current_user
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
 
 from app.models import Message, Group, GroupEvent, ChangeRequest, RequestStatus, Role
 
@@ -30,12 +30,23 @@ live_bp = Blueprint("live", __name__, url_prefix="/live")
 
 def _messages_signal(user):
     """Admin sees every message (their own admin/messages.html list is
-    unfiltered); User/Staff only see broadcasts + their own group's, same
-    scope as dashboard_data.get_messages_for."""
+    unfiltered); User only sees broadcasts + their own group's; Staff also
+    sees staff-only messages — same scope as dashboard_data.get_messages_for."""
     query = Message.query
-    if user.role != Role.ADMIN.value:
+    if user.role == Role.USER.value:
         query = query.filter(
-            or_(Message.target_group_id.is_(None), Message.target_group_id == user.group_id)
+            or_(
+                and_(Message.target_group_id.is_(None), Message.staff_only.is_(False)),
+                Message.target_group_id == user.group_id,
+            )
+        )
+    elif user.role == Role.STAFF.value:
+        query = query.filter(
+            or_(
+                and_(Message.target_group_id.is_(None), Message.staff_only.is_(False)),
+                Message.target_group_id == user.group_id,
+                Message.staff_only.is_(True),
+            )
         )
     count, max_time = query.with_entities(
         func.count(Message.message_id), func.max(Message.time)

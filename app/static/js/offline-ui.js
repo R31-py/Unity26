@@ -1,4 +1,4 @@
-// Camp Points — offline outbox UI (Stage 10).
+// UNITY26 — offline outbox UI (Stage 10).
 // Pairs with offline-core.js (must load first) and sw.js.
 (function () {
   "use strict";

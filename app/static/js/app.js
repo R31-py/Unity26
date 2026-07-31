@@ -1,4 +1,4 @@
-// Camp Points — Stage 7 client script.
+// UNITY26 — Stage 7 client script.
 // Handles: service worker registration, the "Install app" prompt, and the
 // "Enable notifications" push subscription flow. Everything here is a
 // progressive enhancement — the server-rendered app works fine without it.

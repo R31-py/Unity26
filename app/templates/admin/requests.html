@@ -41,7 +41,8 @@
     {% if r.target_type == "message" %}
       <strong>{{ r.payload.get("title") }}</strong><br>
       {{ r.payload.get("content") }}<br>
-      {% if r.payload.get("target_group_id") %}Scoped to one group{% else %}Everyone (broadcast){% endif %}
+      {% set target_gid = r.payload.get("target_group_id") %}
+      {% if target_gid == -1 %}Staff only{% elif target_gid %}Scoped to one group{% else %}Everyone (broadcast){% endif %}
     {% elif r.target_type == "group_event" %}
       <strong>{{ r.payload.get("name") }}</strong> &mdash;
       {{ "+" if r.payload.get("type") == 1 else "-" }}{{ r.payload.get("value") }}

@@ -44,9 +44,15 @@ def user_choices_for_attribution():
     return choices
 
 
+STAFF_ONLY_CHOICE = (-1, "Staff only")
+
+
 def audience_choices():
     groups = Group.query.order_by(Group.name).all()
-    return [(0, "Everyone (broadcast)")] + [(g.group_id, g.name) for g in groups]
+    return (
+        [(0, "Everyone (broadcast)"), STAFF_ONLY_CHOICE]
+        + [(g.group_id, g.name) for g in groups]
+    )
 
 
 def validate_attribution(group_id, user_id):

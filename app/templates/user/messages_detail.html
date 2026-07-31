@@ -27,7 +27,7 @@
     <div class="msg-card-body">{{ m.content }}</div>
     <div class="msg-card-rule"></div>
     <div class="msg-card-foot">
-      <span>Sent to {{ ("@" ~ m.target_group.name) if m.target_group else "@all" }}</span>
+      <span>Sent to {{ "@staff" if m.staff_only else (("@" ~ m.target_group.name) if m.target_group else "@all") }}</span>
       {% if m.author %}<span>@{{ m.author.username }}</span>{% endif %}
     </div>
     <div class="msg-card-title">{{ m.title }}</div>

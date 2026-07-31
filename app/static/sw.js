@@ -1,4 +1,4 @@
-// Camp Points service worker (Stage 10).
+// UNITY26 service worker (Stage 10).
 //
 // Three jobs:
 //   1. Cache every same-origin GET (pages, CSS, icons, manifest) as it's
@@ -17,8 +17,8 @@
 // the new worker and drop stale caches.
 importScripts("/static/js/offline-core.js");
 
-const SHELL_CACHE = "camp-points-shell-v3";
-const RUNTIME_CACHE = "camp-points-runtime-v1";
+const SHELL_CACHE = "unity26-shell-v3";
+const RUNTIME_CACHE = "unity26-runtime-v1";
 const OUTBOX_SYNC_TAG = "camp-outbox-sync";
 
 const APP_SHELL = [
@@ -91,7 +91,7 @@ function offlineNavigationResponse(request) {
   const back = request.headers.get("referer") || "/";
   const html = `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saved for later &middot; Camp Points</title>
+<title>Saved for later &middot; UNITY26</title>
 <link rel="stylesheet" href="/static/css/style.css"></head>
 <body class="gc-body">
 <div class="gc-page" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
@@ -212,7 +212,7 @@ self.addEventListener("message", (event) => {
 // --- Web Push ---------------------------------------------------------
 // Payload shape sent from app/push.py: { title, body, url }
 self.addEventListener("push", (event) => {
-  let data = { title: "Camp Points", body: "You have a new update." };
+  let data = { title: "UNITY26", body: "You have a new update." };
   if (event.data) {
     try {
       data = { ...data, ...event.data.json() };

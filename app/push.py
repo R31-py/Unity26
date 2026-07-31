@@ -105,11 +105,13 @@ def send_push_to_users(users, payload):
 
 def audience_for_message(message):
     """Accounts that should be notified for this message: matches the same
-    visibility rule as `dashboard_data.get_messages_for` (broadcast, or
-    scoped to one group), minus Admins — an Admin doesn't have a Messages
-    tab and shouldn't get a push for their own announcement."""
+    visibility rule as `dashboard_data.get_messages_for` (broadcast, scoped
+    to one group, or staff-only), minus Admins — an Admin doesn't have a
+    Messages tab and shouldn't get a push for their own announcement."""
     query = User.query.filter(User.role != Role.ADMIN.value)
-    if message.target_group_id:
+    if message.staff_only:
+        query = query.filter(User.role == Role.STAFF.value)
+    elif message.target_group_id:
         query = query.filter(User.group_id == message.target_group_id)
     return query.all()
 

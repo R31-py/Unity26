@@ -767,8 +767,8 @@ body.gc-body .cx-sheet-row-arrow { color: var(--gc-muted); }
   border-left: 4px solid transparent;
 }
 .sch-card.sch-card-next { border-left-color: var(--gc-orange); }
-.sch-card-name { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--gc-muted); text-transform: uppercase; }
-.sch-card-time { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-top: 8px; }
+.sch-card-time { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--gc-muted); text-transform: uppercase; }
+.sch-card-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-top: 8px; }
 .sch-card-tap { font-size: 12px; color: var(--gc-muted); margin-top: 8px; }
 .gc-empty-block { text-align: center; color: var(--gc-muted); font-size: 13px; padding: 30px 10px; }
 

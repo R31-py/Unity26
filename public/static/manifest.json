@@ -1,6 +1,6 @@
 {
-  "name": "Camp Points, Messages & Schedule",
-  "short_name": "Camp Points",
+  "name": "UNITY26, Messages & Schedule",
+  "short_name": "UNITY26",
   "description": "Group points, admin messages, and the weekly camp schedule.",
   "start_url": "/?source=pwa",
   "id": "/",

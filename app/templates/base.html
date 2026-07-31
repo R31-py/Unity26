@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Camp{% endblock %} · Camp Points</title>
+  <title>{% block title %}Camp{% endblock %} · UNITY26</title>
   <link rel="stylesheet" href="{{ asset_url('css/style.css') }}">
 
   <!-- PWA: installability (spec §7, Stage 7) -->
@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Camp Points">
+  <meta name="apple-mobile-web-app-title" content="UNITY26">
 
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <script>window.VAPID_PUBLIC_KEY = {{ config.VAPID_PUBLIC_KEY | tojson }};</script>
@@ -33,7 +33,7 @@
       <div class="cx-header">
         <div class="cx-header-row">
           <div class="cx-brand">
-            <span class="cx-brand-name">Camp Points</span>
+            <span class="cx-brand-name">UNITY26</span>
             <span class="cx-brand-tag">{% block brand_tag %}{{ current_user.role_enum.name.title() }}{% endblock %}</span>
           </div>
           <button class="cx-avatar-btn" id="cx-avatar-btn" aria-haspopup="dialog" aria-expanded="false">

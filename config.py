@@ -21,9 +21,9 @@ class Config:
     # here regardless of which prefix the provider gave you.
     # For local development we default to a SQLite file so the app runs
     # out of the box with zero external setup.
-    _db_url = os.environ.get(
-        "DATABASE_URL", f"sqlite:///{os.path.join(basedir, 'instance', 'camp.db')}"
-    )
+    _db_url = os.environ.get("DATABASE_URL", "").strip().strip("'\"")
+    if not _db_url:
+        _db_url = f"sqlite:///{os.path.join(basedir, 'instance', 'camp.db')}"
     if _db_url.startswith("postgres://"):
         _db_url = _db_url.replace("postgres://", "postgresql+psycopg://", 1)
     elif _db_url.startswith("postgresql://") and "+psycopg" not in _db_url:

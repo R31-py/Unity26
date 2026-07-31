@@ -260,6 +260,12 @@ class Message(db.Model):
         db.Integer, db.ForeignKey("groups.group_id", ondelete="CASCADE"), nullable=True
     )
 
+    # True = staff-only channel (visible to Staff + Admin, not Users).
+    # Mutually exclusive with target_group_id — a message is either
+    # broadcast, scoped to one group, or scoped to staff, never more than
+    # one of those at once.
+    staff_only = db.Column(db.Boolean, default=False, nullable=False)
+
     author = db.relationship(
         "User", back_populates="messages_authored", foreign_keys=[user_id]
     )

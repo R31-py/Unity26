@@ -1,4 +1,4 @@
-// Camp Points service worker (Stage 7).
+// UNITY26 service worker (Stage 7).
 //
 // Two jobs:
 //   1. Cache a small offline app-shell so the installed app doesn't show
@@ -9,7 +9,7 @@
 //      isn't in an open tab.
 //
 // Bump this on any change below so clients pick up the new worker.
-const CACHE_NAME = "camp-points-shell-v1";
+const CACHE_NAME = "unity26-shell-v1";
 
 const APP_SHELL = [
   "/",
@@ -70,7 +70,7 @@ self.addEventListener("fetch", (event) => {
 // --- Web Push ---------------------------------------------------------
 // Payload shape sent from app/push.py: { title, body, url }
 self.addEventListener("push", (event) => {
-  let data = { title: "Camp Points", body: "You have a new update." };
+  let data = { title: "UNITY26", body: "You have a new update." };
   if (event.data) {
     try {
       data = { ...data, ...event.data.json() };

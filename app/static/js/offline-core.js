@@ -1,4 +1,4 @@
-// Camp Points — shared offline outbox (Stage 10).
+// UNITY26 — shared offline outbox (Stage 10).
 //
 // This file is loaded in two different JS contexts with the *same* code:
 //   - the service worker (via importScripts), so a request that fails

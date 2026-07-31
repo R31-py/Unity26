@@ -29,8 +29,8 @@
       {% if is_next %}{% set ns.marked_next = true %}{% endif %}
       {% set ev_local = item.event.time | local_time %}
       <div class="sch-card{{ ' sch-card-next' if is_next else '' }}" data-open-overlay="ev-{{ item.event.event_id }}">
-        <div class="sch-card-name">{{ item.event.name }}</div>
         <div class="sch-card-time">{{ ev_local.strftime("%I:%M %p %d %b %Y") }}</div>
+        <div class="sch-card-name">{{ item.event.name }}</div>
         <div class="sch-card-tap">Tap for more</div>
       </div>
       <template id="ev-{{ item.event.event_id }}">

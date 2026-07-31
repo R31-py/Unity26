@@ -4,6 +4,7 @@ cards (spec §3)."""
 
 from datetime import datetime, timedelta
 
+from app.extensions import db
 from app.models import GroupEvent, Message, Event
 
 
@@ -31,13 +32,20 @@ def get_room_summary(user):
 
 
 def get_messages_for(user):
-    """Messages visible to this user: broadcasts (target_group_id IS NULL)
-    plus anything scoped to their own group, newest first (spec §2.2.5)."""
+    """Messages visible to this user: broadcasts (target_group_id IS NULL,
+    staff_only False) plus anything scoped to their own group, plus
+    staff-only messages if this user is Staff or Admin, newest first
+    (spec §2.2.5)."""
     from sqlalchemy import or_
 
-    query = Message.query.filter(
-        or_(Message.target_group_id.is_(None), Message.target_group_id == user.group_id)
-    )
+    conditions = [
+        db.and_(Message.target_group_id.is_(None), Message.staff_only.is_(False)),
+        Message.target_group_id == user.group_id,
+    ]
+    if user.is_staff or user.is_admin:
+        conditions.append(Message.staff_only.is_(True))
+
+    query = Message.query.filter(or_(*conditions))
     return query.order_by(Message.time.desc()).all()
 
 

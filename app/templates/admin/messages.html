@@ -25,7 +25,9 @@
   <div class="msg-card-title" style="text-align:left; margin-top:10px;">{{ m.title }}</div>
   <div class="msg-card-rule"></div>
   <div class="msg-card-foot">
-    {% if m.target_group %}
+    {% if m.staff_only %}
+      <span class="grp-chip grp-chip-rewards">Staff only</span>
+    {% elif m.target_group %}
       <span><span class="grp-swatch" style="width:9px;height:9px;background:{{ m.target_group.color or '#999' }}"></span> {{ m.target_group.name }}</span>
     {% else %}
       <span class="grp-chip grp-chip-rewards">Everyone</span>

@@ -547,11 +547,6 @@ def point_delete(group_event_id):
 # ---------------------------------------------------------------------------
 # Messages
 # ---------------------------------------------------------------------------
-def _audience_choices():
-    groups = Group.query.order_by(Group.name).all()
-    return [(0, "Everyone (broadcast)")] + [(g.group_id, g.name) for g in groups]
-
-
 @admin_bp.route("/messages")
 @login_required
 @role_required(Role.ADMIN)
@@ -576,11 +571,13 @@ def message_new():
     form.target_group_id.choices = _audience_choices()
 
     if form.validate_on_submit():
+        audience = form.target_group_id.data
         message = Message(
             title=form.title.data.strip(),
             content=form.content.data.strip(),
             user_id=current_user.user_id,
-            target_group_id=form.target_group_id.data or None,
+            target_group_id=audience if audience and audience > 0 else None,
+            staff_only=(audience == -1),
         )
         db.session.add(message)
         db.session.commit()
@@ -600,12 +597,14 @@ def message_edit(message_id):
     form.target_group_id.choices = _audience_choices()
 
     if request.method == "GET":
-        form.target_group_id.data = message.target_group_id or 0
+        form.target_group_id.data = -1 if message.staff_only else (message.target_group_id or 0)
 
     if form.validate_on_submit():
+        audience = form.target_group_id.data
         message.title = form.title.data.strip()
         message.content = form.content.data.strip()
-        message.target_group_id = form.target_group_id.data or None
+        message.target_group_id = audience if audience and audience > 0 else None
+        message.staff_only = (audience == -1)
         db.session.commit()
         flash(f"Updated \"{message.title}\".", "success")
         return redirect(url_for("admin.messages"))
@@ -746,7 +745,9 @@ class _RequestApplyError(Exception):
 
 
 def _apply_message_request(payload, submitted_by_user_id):
-    target_group_id = payload.get("target_group_id") or None
+    raw_target = payload.get("target_group_id") or None
+    staff_only = raw_target == -1
+    target_group_id = raw_target if raw_target and raw_target > 0 else None
     if target_group_id and Group.query.get(target_group_id) is None:
         raise _RequestApplyError("the target group no longer exists.")
 
@@ -755,6 +756,7 @@ def _apply_message_request(payload, submitted_by_user_id):
         content=(payload.get("content") or "").strip(),
         user_id=submitted_by_user_id,
         target_group_id=target_group_id,
+        staff_only=staff_only,
     )
     db.session.add(message)
     return message
