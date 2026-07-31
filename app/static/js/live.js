@@ -106,4 +106,8 @@
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) poll();
   });
+
+  // A queued offline write (create/edit/delete) just made it to the
+  // server — refresh right away instead of waiting for the next tick.
+  document.addEventListener("camp:outbox-synced", poll);
 })();

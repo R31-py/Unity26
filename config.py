@@ -52,6 +52,13 @@ class Config:
 
     # --- CSRF (Flask-WTF) ---
     WTF_CSRF_ENABLED = True
+    # Flask-WTF's default token lifetime is 1 hour. The offline outbox
+    # (Stage 10) can hold a queued submission — with the CSRF token that
+    # was on the page at the time — for much longer than that if the
+    # device stays offline, so we don't want the token itself to expire
+    # on a timer. It still becomes invalid the normal way: on logout, or
+    # once PERMANENT_SESSION_LIFETIME (7 days) rotates the session.
+    WTF_CSRF_TIME_LIMIT = None
 
     # --- Web Push (VAPID) — generate with generate_vapid_keys.py.
     # Blank means push is simply off: the frontend disables the

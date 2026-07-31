@@ -624,6 +624,25 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 
 body.gc-body { background: var(--gc-bg); color: var(--gc-ink); font-family: var(--font-body); }
 
+/* --- avatar bottom sheet, light-theme override ---
+   The .cx-sheet menu markup (still shared with the old dark shell) relies
+   on --cx-ink-900/--cx-chip/--cx-muted/--cx-line tokens that only exist
+   inside .carousel-page. On the new dashboard_light_base pages those tokens
+   are undefined, so the sheet rendered with a transparent background and
+   unreadable text. Give it a fully self-contained solid look here instead. */
+body.gc-body .cx-backdrop { background: rgba(27, 27, 31, 0.45); }
+body.gc-body .cx-sheet { background: var(--gc-card); border-top: 1px solid #ececef; box-shadow: 0 -10px 40px rgba(0,0,0,0.18); }
+body.gc-body .cx-sheet-av { background: linear-gradient(160deg, var(--gc-orange), var(--gc-orange-dark)); border-color: rgba(0,0,0,0.06); }
+body.gc-body .cx-sheet-name { color: var(--gc-ink); }
+body.gc-body .cx-sheet-role { color: var(--gc-orange); }
+body.gc-body .cx-sheet-close { background: #f2f2f4; border-color: #ececef; color: var(--gc-muted); }
+body.gc-body .cx-sheet-row { background: #f7f7f8; border-color: #ececef; }
+body.gc-body .cx-sheet-row:hover { background: #fdece0; border-color: rgba(242,98,15,0.35); }
+body.gc-body .cx-sheet-row-ic { background: #fdece0; color: var(--gc-orange-dark); }
+body.gc-body .cx-sheet-row-label { color: var(--gc-muted); }
+body.gc-body .cx-sheet-row-value { color: var(--gc-ink); }
+body.gc-body .cx-sheet-row-arrow { color: var(--gc-muted); }
+
 .gc-page { max-width: 480px; margin: 0 auto; padding: 18px 16px 32px; min-height: 100vh; }
 
 /* --- header: white rounded card, avatar + name/username left, clock right --- */
@@ -768,8 +787,8 @@ body.gc-body { background: var(--gc-bg); color: var(--gc-ink); font-family: var(
 .sch-overlay.open .sch-overlay-card { transform: translateY(0); }
 .sch-ov-rule { height: 3px; width: 56px; background: var(--gc-orange); border-radius: 3px; margin: 0 auto 16px; }
 .sch-ov-audience { font-size: 12px; font-weight: 700; color: var(--gc-ink); }
-.sch-ov-title { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-top: 8px; }
-.sch-ov-time { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: var(--gc-orange); margin-top: 10px; }
+.sch-ov-time { font-family: var(--font-mono); font-weight: 600; font-size: 12px; letter-spacing: .02em; color: var(--gc-orange); margin-top: 8px; text-transform: uppercase; }
+.sch-ov-title { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.25; margin-top: 6px; }
 .sch-ov-details-label { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin-top: 20px; }
 .sch-ov-details { font-size: 13px; color: var(--gc-muted); line-height: 1.6; margin-top: 8px; }
 .sch-ov-close { font-size: 12px; color: var(--gc-muted); margin-top: 20px; }
