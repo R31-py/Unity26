@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 
 from dotenv import load_dotenv
+from sqlalchemy.pool import NullPool
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
@@ -29,6 +30,29 @@ class Config:
         _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
     SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # SQLAlchemy's default pool (QueuePool: 5 base + 10 overflow = up to 15
+    # connections held open *per warm function instance*) makes sense for a
+    # long-running process, not for Vercel's serverless model — each
+    # invocation is its own short-lived process, and a couple of concurrent
+    # ones can already exhaust a hosted Postgres pooler's connection limit
+    # on their own (e.g. Supabase's session-mode pooler defaults to 15
+    # total clients). NullPool opens exactly one real connection per
+    # request and closes it right after, which matches that request
+    # lifecycle instead of fighting it. pool_pre_ping guards against a
+    # connection going stale between the pooler and a cold-started function.
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "poolclass": NullPool,
+        "pool_pre_ping": True,
+    }
+    # If DATABASE_URL points at Supabase's *transaction-mode* pooler
+    # (port 6543 instead of 5432), a client can be handed a different
+    # backend Postgres connection between two queries in the same request.
+    # psycopg3's server-side prepared statements assume a stable
+    # connection, so they'd silently break in that mode — disable them.
+    # Harmless (just skips an optimization) on session mode or SQLite.
+    if _db_url.startswith("postgresql"):
+        SQLALCHEMY_ENGINE_OPTIONS["connect_args"] = {"prepare_threshold": None}
 
     # --- Display timezone ---
     # Every timestamp is stored in the database as naive UTC (see the
