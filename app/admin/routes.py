@@ -644,12 +644,14 @@ def events():
 @login_required
 @role_required(Role.ADMIN)
 def event_new():
+    from app.tz import local_naive_to_utc_naive
+
     form = EventForm()
     if form.validate_on_submit():
         event = Event(
             name=form.name.data.strip(),
             description=(form.description.data or "").strip() or None,
-            time=form.time.data,
+            time=local_naive_to_utc_naive(form.time.data),
         )
         db.session.add(event)
         db.session.commit()
@@ -662,12 +664,22 @@ def event_new():
 @login_required
 @role_required(Role.ADMIN)
 def event_edit(event_id):
+    from app.tz import local_naive_to_utc_naive, to_local
+
     event = Event.query.get_or_404(event_id)
-    form = EventForm(obj=event)
+    if request.method == "GET":
+        # The stored `time` is naive UTC; the datetime-local picker needs
+        # camp-local wall-clock numbers, or the admin would see (and,
+        # if they saved without changing it, re-save) the wrong time.
+        form = EventForm(obj=event)
+        if event.time:
+            form.time.data = to_local(event.time).replace(tzinfo=None)
+    else:
+        form = EventForm()
     if form.validate_on_submit():
         event.name = form.name.data.strip()
         event.description = (form.description.data or "").strip() or None
-        event.time = form.time.data
+        event.time = local_naive_to_utc_naive(form.time.data)
         db.session.commit()
         flash(f"Updated \"{event.name}\".", "success")
         return redirect(url_for("admin.events"))
@@ -773,6 +785,8 @@ def _apply_group_event_request(payload):
 
 
 def _apply_event_request(payload):
+    from app.tz import local_naive_to_utc_naive
+
     time_str = payload.get("time")
     try:
         event_time = datetime.fromisoformat(time_str) if time_str else None
@@ -780,6 +794,12 @@ def _apply_event_request(payload):
         event_time = None
     if event_time is None:
         raise _RequestApplyError("the event's date/time couldn't be read.")
+    # `time_str` is the naive local wall-clock value the Staff member
+    # typed into the datetime-local picker (see request_event_new) —
+    # convert it the same way event_new/event_edit do, so every Event
+    # row ends up in the same naive-UTC form regardless of which path
+    # created it.
+    event_time = local_naive_to_utc_naive(event_time)
 
     event = Event(
         name=(payload.get("name") or "").strip(),

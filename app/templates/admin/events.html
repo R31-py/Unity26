@@ -24,7 +24,7 @@
     <span class="pts-event-name">{{ e.name }}</span>
   </div>
   {% if e.description %}<div class="pts-event-desc">{{ e.description }}</div>{% endif %}
-  <div class="evt-card-time">{{ e.time.strftime("%a, %b %d &middot; %H:%M")|safe if e.time else "—" }}</div>
+  <div class="evt-card-time">{{ (e.time | local_time).strftime("%a, %b %d &middot; %H:%M")|safe if e.time else "—" }}</div>
   <div class="evt-card-badges">
     {% if e.sent_20min_at %}<span class="evt-badge-sent">20-min sent</span>{% endif %}
     {% if e.sent_start_at %}<span class="evt-badge-sent">Start sent</span>{% endif %}

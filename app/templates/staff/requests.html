@@ -38,8 +38,8 @@
     {% endif %}
   </div>
   <div class="pts-event-foot">
-    <span>Submitted {{ r.created_at.strftime("%b %d, %H:%M") }}</span>
-    <span>{{ ("Reviewed " ~ r.reviewed_at.strftime("%b %d, %H:%M")) if r.reviewed_at else "Awaiting review" }}</span>
+    <span>Submitted {{ (r.created_at | local_time).strftime("%b %d, %H:%M") }}</span>
+    <span>{{ ("Reviewed " ~ (r.reviewed_at | local_time).strftime("%b %d, %H:%M")) if r.reviewed_at else "Awaiting review" }}</span>
   </div>
   {% if r.status == "rejected" and r.review_reason %}
   <div class="req-reviewed">{{ r.review_reason }}</div>

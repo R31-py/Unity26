@@ -16,10 +16,11 @@
 
 <div data-live-key="messages" data-live-version="{{ messages_version }}">
 {% for m in messages %}
+{% set m_local = m.time | local_time %}
 <div class="msg-card">
   <div class="msg-card-head">
-    <span class="msg-card-time">{{ m.time.strftime("%I:%M %p") }}</span>
-    <span class="msg-card-date">{{ m.time.strftime("%d %b")|upper }}</span>
+    <span class="msg-card-time">{{ m_local.strftime("%I:%M %p") }}</span>
+    <span class="msg-card-date">{{ m_local.strftime("%d %b")|upper }}</span>
   </div>
   <div class="msg-card-title" style="text-align:left; margin-top:10px;">{{ m.title }}</div>
   <div class="msg-card-rule"></div>

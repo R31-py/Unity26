@@ -1,27 +1,34 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}{{ "Edit group" if mode == "edit" else "New group" }}{% endblock %}
-{% block content %}
-<div class="page-head">
-  <div class="eyebrow">Admin · Manage</div>
-  <h1>{{ "Edit " + group.name if mode == "edit" else "New group" }}</h1>
-</div>
 
-<div class="form-card">
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('admin.groups') }}">&larr; Back</a>
+  <span class="gc-page-title">{{ "Edit group" if mode == "edit" else "New group" }}</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-page-eyebrow">Admin &middot; Manage</div>
+<div class="gc-page-h1">{{ "Edit " + group.name if mode == "edit" else "New group" }}</div>
+
+<div class="gc-form-card">
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
-    <div class="field">
+    <div class="gc-field">
       {{ form.name.label }}
       {{ form.name(type="text") }}
-      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.name.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.color.label }}
       {{ form.color(type="text") }}
-      <div class="hint">Any CSS color value — used as a swatch next to the group name.</div>
+      <div class="gc-form-hint">Any CSS color value — used as a swatch next to the group name.</div>
     </div>
-    <div class="form-actions">
-      {{ form.submit(class="btn btn-amber") }}
-      <a class="btn btn-outline" href="{{ url_for('admin.groups') }}">Cancel</a>
+    <div class="gc-form-actions">
+      {{ form.submit(class="gc-btn gc-btn-primary") }}
+      <a class="gc-btn gc-btn-outline" href="{{ url_for('admin.groups') }}">Cancel</a>
     </div>
   </form>
 </div>

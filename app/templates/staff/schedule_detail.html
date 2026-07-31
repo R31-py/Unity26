@@ -27,16 +27,17 @@
     {% for item in day.events %}
       {% set is_next = (not ns.marked_next) and item.status != "past" %}
       {% if is_next %}{% set ns.marked_next = true %}{% endif %}
+      {% set ev_local = item.event.time | local_time %}
       <div class="sch-card{{ ' sch-card-next' if is_next else '' }}" data-open-overlay="ev-{{ item.event.event_id }}">
         <div class="sch-card-name">{{ item.event.name }}</div>
-        <div class="sch-card-time">{{ item.event.time.strftime("%I:%M %p %d %b %Y") }}</div>
+        <div class="sch-card-time">{{ ev_local.strftime("%I:%M %p %d %b %Y") }}</div>
         <div class="sch-card-tap">Tap for more</div>
       </div>
       <template id="ev-{{ item.event.event_id }}">
         <div class="sch-ov-rule"></div>
         <div class="sch-ov-audience">@all</div>
         <div class="sch-ov-title">{{ item.event.name }}</div>
-        <div class="sch-ov-time">{{ item.event.time.strftime("%I:%M %p %d %b %Y") }}</div>
+        <div class="sch-ov-time">{{ ev_local.strftime("%I:%M %p %d %b %Y") }}</div>
         <div class="sch-ov-details-label">Details</div>
         <div class="sch-ov-details">{{ item.event.description or "No additional details for this event." }}</div>
         <div class="sch-ov-close">Tap to close</div>

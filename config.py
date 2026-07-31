@@ -30,6 +30,17 @@ class Config:
     SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # --- Display timezone ---
+    # Every timestamp is stored in the database as naive UTC (see the
+    # `time`/`created_at` columns in models.py) — that part is correct and
+    # consistent everywhere. This is the ONE place that timezone matters:
+    # it's the zone those UTC timestamps get converted into before being
+    # shown to anyone (see app/tz.py). Use an IANA name, e.g.
+    # "America/New_York", "America/Chicago", "America/Denver",
+    # "America/Los_Angeles". Set CAMP_TIMEZONE in your environment to
+    # whatever timezone the camp actually runs on.
+    CAMP_TIMEZONE = os.environ.get("CAMP_TIMEZONE", "America/New_York")
+
     # --- Sessions / cookies ---
     # Signed cookies only (Flask's default session backend) — no server-side
     # session storage, since Vercel functions are stateless (see spec §5).

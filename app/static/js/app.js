@@ -137,7 +137,34 @@
       return;
     }
     const existing = await reg.pushManager.getSubscription();
+    if (existing) {
+      // A push subscription lives at the browser/service-worker level,
+      // not per-login — if a different account subscribed earlier on
+      // this same device, the server still has this endpoint attributed
+      // to THAT account. Re-sync ownership to whoever is logged in now
+      // on every load, so switching accounts on a shared device doesn't
+      // silently leave notifications routed to the previous user.
+      await saveSubscriptionOnServer(existing);
+    }
     setNotifBtnState(existing ? "on" : "off");
+  }
+
+  async function saveSubscriptionOnServer(subscription) {
+    try {
+      const res = await fetch("/push/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken(),
+        },
+        body: JSON.stringify(subscription.toJSON()),
+      });
+      if (!res.ok) {
+        console.warn("Failed to save push subscription on the server.");
+      }
+    } catch (err) {
+      console.warn("Failed to save push subscription on the server.", err);
+    }
   }
 
   async function subscribeToPush() {
@@ -160,18 +187,7 @@
       applicationServerKey: urlBase64ToUint8Array(vapidKey),
     });
 
-    const res = await fetch("/push/subscribe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken(),
-      },
-      body: JSON.stringify(subscription.toJSON()),
-    });
-
-    if (!res.ok) {
-      console.warn("Failed to save push subscription on the server.");
-    }
+    await saveSubscriptionOnServer(subscription);
     await refreshNotifState();
   }
 

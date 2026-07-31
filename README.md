@@ -10,138 +10,6 @@ plus everything needed to actually deploy this to Vercel.
 > the code moved on — it's now been rewritten to match what's actually
 > here through Stage 7.
 
-## UI redesign (in progress)
-
-The app is being migrated from the dark, swipeable vertical-carousel
-dashboard to a static, light "card grid" design (white cards on a light
-grey page, orange accents), matching an approved set of mockup screens.
-This is being done **incrementally, page by page**, so functionality is
-never broken mid-migration — every step below has been smoke-tested
-against a real Flask app + SQLite DB before being committed.
-
-**Done:**
-- **Main dashboard** (user, staff, admin) — `app/templates/dashboard_light_base.html`
-  is the new shell (white header card with avatar/name/@username + a live
-  clock, an orange "verse of the day" card, then a static 2-column grid of
-  cards). Verses are hardcoded locally in `app/verses.py` (no external API),
-  picked deterministically by day-of-year. The old vertical drag-carousel is
-  gone from these three pages; no scroll/swipe interaction remains here.
-  - `user/dashboard.html`: Group, Room, Schedule, Messages cards.
-  - `staff/dashboard.html`: same four + a Requests card.
-  - `admin/dashboard.html`: Users, Groups, Rooms, Points, Messages, Events,
-    Requests cards.
-- **Schedule page** (user, staff) — `user/schedule_detail.html` /
-  `staff/schedule_detail.html` now extend the same light shell. Events are
-  grouped under date headings (only days with events are shown), each
-  event is a tappable preview card, and tapping one opens a full detail
-  overlay (audience, name, time, description) built client-side from a
-  `<template>` via `app/static/js/schedule.js` — no extra network request.
-  The nearest upcoming event gets an orange accent bar. Week
-  navigation (`?week=`) is unchanged.
-- **Messages page** (user, staff) — `user/messages_detail.html` /
-  `staff/messages_detail.html` are now a light card feed grouped by day
-  (same visual language as Schedule): each message shows its time/date,
-  content, who it was sent to (a group or `@all`), the author's
-  `@username`, and its title. Messages from the last 24h (the same
-  heuristic the dashboard's unread badge already used) get an orange
-  accent bar. Both routes now also pass `unread_message_count` to the
-  template, matching what the dashboard already computed.
-- **Dead-code cleanup** — once the Dashboard, Schedule, and Messages
-  pages were all migrated, nothing on any page still used the old
-  vertical drag-carousel (`.cx-carousel-wrap` / `.cx-item` / `.cx-track`),
-  so it's been removed for real rather than left unused:
-  `dashboard_base.html` and `_carousel_macros.html` are deleted, and
-  `carousel.js` now only contains the avatar bottom-sheet logic (still
-  used by `base.html`'s not-yet-migrated pages). The dark `.cx-*` CSS
-  theme in `style.css` is still there because `base.html` (Users, Points,
-  Messages/Events/Requests lists, Room/Points detail, all admin CRUD
-  forms, auth, error pages) still uses it for its header/nav chrome —
-  that goes away once all of those get their own card-UI pass.
-
-- **Groups page** (admin) — `admin/groups.html` now extends the light
-  shell instead of `base.html`. The ranked leaderboard is a stack of
-  white `grp-card`s (rank, group-color swatch, name, member count) with
-  a chip row for points/rewards/penalties, matching the Schedule/Messages
-  card language. Tapping a card still opens edit (whole card is a link);
-  the delete `&times;` button sits top-right above it, same overlay
-  pattern the old `entity-card` used, just restyled light. The "+ New
-  group" action is now a full-width orange `gc-btn-primary` button above
-  the list. `admin/group_form.html` (add/edit) is untouched for now —
-  same as Messages/Events, list pages migrate before their forms do.
-
-- **Rooms page** (admin) — `admin/rooms.html` now extends the light
-  shell too. Each building gets a plain heading row (name + small
-  "Edit"/delete actions, no card chrome of its own) instead of the old
-  `building-block`, followed by a stack of white `room-card`s (room
-  number, occupancy count, an Open/Full badge) — and, per spec,
-  roommates are now shown directly on the card as small
-  `room-mate-card` chips (first name + surname initial) instead of just
-  a bare occupant count. "+ Building" is a secondary (outline) button,
-  "+ Room" the primary orange one. `building_form.html`/`room_form.html`
-  are untouched, same reasoning as every other form so far.
-
-> Correction: this file's "Not started yet" list previously said Groups
-> and Rooms were the *only* pages left once this step landed — that was
-> stale/wrong. A repo-wide check after finishing Rooms shows quite a few
-> more pages still extend `base.html`.
-
-- **Points detail + Room detail** (user, staff) —
-  `user/points_detail.html` / `staff/points_detail.html` and
-  `user/room_detail.html` / `staff/room_detail.html` now extend the
-  light shell (identical between roles apart from the back-link target,
-  same as every other page pair). Points detail leads with a big
-  `pts-total-card` (group total), then the ledger as `pts-event-card`s
-  with a green/red accent bar for reward vs. penalty, then the group
-  leaderboard as compact `pts-rank-row`s with the viewer's own group
-  outlined and tagged "YOU". Room detail leads with the same total-card
-  style for room number/building, then roommates as `rmd-mate-row`s
-  (name + group swatch). No admin edit affordances here — these are
-  read-only "my stuff" views, unlike the admin Groups/Rooms management
-  pages from steps 4–5.
-
-- **Points & Penalties page** (admin) — `admin/points.html` reuses the
-  `pts-event-card` ledger style built for step 6's user/staff Points
-  detail page, extended with a group swatch+name row (this ledger spans
-  every group, unlike the per-group one members see) and an
-  Edit/Delete action row per entry. Delete uses the new reusable
-  `gc-icon-delete-btn` — a small inline round button for cards that
-  aren't a single full-card link (unlike Groups/Rooms, each entry here
-  needs separate Edit and Delete actions, so no card-wide overlay link).
-  `point_form.html` untouched, same reasoning as every form so far.
-
-- **Users, Messages, Events, Requests** (admin) — the last four admin
-  lists, all converted together to conserve effort: `admin/users.html`
-  reuses the `grp-card` pattern from Groups (role/group/room as chips,
-  new `chip-blue`/`chip-grey`/`chip-muted` colors for role). `admin/
-  messages.html` reuses `msg-card` from the Messages detail page, with
-  an `Everyone`/group-swatch audience line plus the same Edit/Delete
-  action row `points.html` introduced. `admin/events.html` reuses
-  `pts-event-card` with two new small classes for the date/time line and
-  the 20-min/start "sent" badges. `admin/requests.html` is the one
-  genuinely new layout: status-filter tabs (`req-tab`, matching the
-  `gc-week-btn` pill look), a status badge per card, and — only for
-  pending ones — an Approve button plus a `<details>`-based Reject
-  form. All four forms (`user_form.html`, `message_form.html`,
-  `event_form.html`) stay on `base.html` as before.
-
-> Note: these four were built and Jinja-parse-checked, but not smoke-
-> tested against a live app in this environment the way the README
-> claims for the very earliest stages — same caveat as steps 4-7.
-
-- **My Requests** (staff) — `staff/requests.html` was the last list
-  page left. It reuses `admin/requests.html`'s card shape (status
-  badge, `pts-event-card`) minus the Approve/Reject actions (staff only
-  see their own requests' outcome, they don't review them), with three
-  `gc-btn-secondary` shortcuts up top to start a new Message/Points/Event
-  request. Same parse-checked-not-smoke-tested caveat as above.
-
-**Not started yet** (still on the old dark `base.html` header/table UI):
-- All add/edit forms for every entity (Groups, Rooms, Buildings, Users,
-  Points, Messages, Events) plus the Staff change-request forms.
-- Auth (login) and error pages (403/404).
-- `base.html`'s dark `.cx-*` header/nav chrome and CSS can only be
-  retired once *all* of the above are converted.
-
 ## What's new in Stage 8
 
 - **Event reminders** (spec §4, §2.2.6) — a push 20 minutes before each
@@ -330,14 +198,21 @@ shell — `app/templates/dashboard_light_base.html`:
 - **Points/Room detail** (User/Staff) and **all Admin CRUD list pages**
   (Users, Groups, Rooms, Points, Messages, Events, Requests) — same card
   grid treatment.
+- **All CRUD/request forms** — every `admin/*_form.html` (Users, Groups,
+  Rooms, Points, Messages, Events, Buildings) and every
+  `staff/request_*_form.html` (message/points/event proposals) now also
+  extend the light shell, with a new `.gc-form-card`/`.gc-field`/`.gc-btn`
+  style matching the rest of the app (orange focus rings and primary
+  buttons instead of the old blue). This was the last piece — **the
+  redesign is now complete** for every page except login and the error
+  pages (see below).
 
-**Intentionally still on the old dark theme (`base.html`):** every
-`*_form.html` (new/edit forms), the login page, and error pages. These
-are short, single-purpose forms where the card-grid treatment doesn't
-apply — they keep `base.html`'s dark header/nav chrome and the avatar
-bottom sheet, which is why that CSS (`.cx-header`, `.cx-avatar-btn`,
-`.cx-backdrop`/`.cx-sheet-*`) and the (now avatar-sheet-only)
-`carousel.js` are still in the codebase rather than deleted.
+**Intentionally still on the old dark theme (`base.html`):** only the
+login page and error pages now. They're short, one-off pages where the
+card-grid treatment doesn't apply, so they keep `base.html`'s dark
+header/nav chrome and `.field`/`.btn-primary` styling — which is why
+that CSS and the (avatar-sheet-only) `carousel.js` are still in the
+codebase rather than deleted.
 
 **Dead-code cleanup:** once no page anywhere used the old
 vertical drag-carousel, its markup, JS, and CSS were removed outright
@@ -370,3 +245,43 @@ the badge inside the standard 80% "safe zone" on a solid brand-orange
 background, since OS icon masks (circle/squircle/rounded-square on
 Android) crop right to the canvas edge and a transparent-cornered badge
 would otherwise show bare system background peeking through.
+
+## Timezone handling
+
+Every timestamp column (`Message.time`, `Event.time`, `GroupEvent.created_at`,
+`ChangeRequest.created_at`/`reviewed_at`) is stored as **naive UTC** — that
+part was already correct and hasn't changed. Two real bugs existed around
+it, both now fixed in `app/tz.py`:
+
+1. **Display never converted UTC back to local time.** Every template
+   just called `.strftime()` directly on the raw UTC value, so displayed
+   times were off by the camp's UTC offset — most visibly, evening
+   messages/events crossed midnight in UTC and showed up under the
+   *wrong calendar day* entirely. Fixed by adding a `local_time` Jinja
+   filter (wraps `app/tz.to_local()`) and routing every template that
+   formats a stored timestamp through it first.
+2. **The Event date/time picker's input was stored as if it were already
+   UTC.** The `<input type="datetime-local">` field just captures
+   whatever wall-clock numbers were typed, with no timezone attached —
+   e.g. typing "8:00 PM" produces a naive `datetime(...,20,0)`. The
+   person typing it means camp-local time, not UTC, so `event_new`,
+   `event_edit`, and the staff `_apply_event_request` approval path now
+   convert that local value to the correct UTC instant via
+   `app/tz.local_naive_to_utc_naive()` before storing it. `event_edit`'s
+   GET path does the inverse conversion too, so the form shows back the
+   correct local time instead of the raw UTC value.
+
+`get_weekly_schedule()` in `app/dashboard_data.py` also had the same
+root problem baked into its day-bucketing (grouping events by their raw
+UTC `.date()` instead of their local calendar date) — fixed via
+`app/tz.local_date()`.
+
+**Configuration:** set `CAMP_TIMEZONE` to an IANA name (e.g.
+`America/New_York`, `America/Chicago`, `America/Denver`,
+`America/Los_Angeles`) — see `.env.example`. Getting this wrong shifts
+every displayed message/event time and where events land on the
+schedule, so double-check it against wherever the camp actually is
+before deploying. There was no existing production data to migrate at
+the time of this fix; if that's no longer true, any `Event.time` rows
+saved before this fix will need a one-time correction, since they were
+saved under the old (incorrect) local-time-mislabeled-as-UTC scheme.

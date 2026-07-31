@@ -50,17 +50,24 @@ _ASSUMED_EVENT_DURATION = timedelta(hours=1)
 def get_weekly_schedule(week_offset=0, now=None):
     """Builds a Monday-Sunday timetable for the requested week (0 = this
     week, -1 = last week, +1 = next week), with each event classified as
-    past / current / upcoming relative to `now`."""
+    past / current / upcoming relative to `now`.
+
+    Day boundaries are computed in the camp's local timezone (see
+    app/tz.py), not UTC — otherwise an event at, say, 9pm US-Eastern
+    (1am UTC the next day) would get bucketed under tomorrow's date
+    instead of today's."""
+    from app.tz import local_date, local_midnight_to_utc_naive
+
     now = now or datetime.utcnow()
-    today = now.date()
+    today = local_date(now)
     monday = today - timedelta(days=today.weekday())
     week_start = monday + timedelta(weeks=week_offset)
     week_end = week_start + timedelta(days=7)
 
     events = (
         Event.query.filter(
-            Event.time >= datetime.combine(week_start, datetime.min.time()),
-            Event.time < datetime.combine(week_end, datetime.min.time()),
+            Event.time >= local_midnight_to_utc_naive(week_start),
+            Event.time < local_midnight_to_utc_naive(week_end),
         )
         .order_by(Event.time.asc())
         .all()
@@ -71,7 +78,7 @@ def get_weekly_schedule(week_offset=0, now=None):
         day_date = week_start + timedelta(days=i)
         day_events = []
         for e in events:
-            if e.time is None or e.time.date() != day_date:
+            if e.time is None or local_date(e.time) != day_date:
                 continue
             ends_at = e.time + _ASSUMED_EVENT_DURATION
             if now < e.time:

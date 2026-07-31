@@ -34,7 +34,7 @@
   {% call gm.card("&#9711;", "Events", url_for('admin.events'), small_hint="Tap for full schedule") %}
     {% if stats.next_event %}
       <div class="gc-card-title">{{ stats.next_event.name }}</div>
-      <div class="gc-card-caption">{{ stats.next_event.time.strftime("%d %b · %H:%M") }}</div>
+      <div class="gc-card-caption">{{ (stats.next_event.time | local_time).strftime("%d %b · %H:%M") }}</div>
     {% else %}
       <div class="gc-card-empty">No events yet</div>
     {% endif %}

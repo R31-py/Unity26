@@ -13,15 +13,16 @@
 <div data-live-key="messages" data-live-version="{{ messages_version }}">
 {% set ns = namespace(last_day=none) %}
 {% for m in messages %}
-  {% set day = m.time.date() if m.time else none %}
+  {% set m_local = m.time | local_time if m.time else none %}
+  {% set day = m_local.date() if m_local else none %}
   {% if day != ns.last_day %}
     {% set ns.last_day = day %}
-    <div class="gc-day-heading">{{ m.time.strftime("%d %b %Y")|upper if m.time else "UNDATED" }}</div>
+    <div class="gc-day-heading">{{ m_local.strftime("%d %b %Y")|upper if m_local else "UNDATED" }}</div>
   {% endif %}
   <div class="msg-card{{ ' msg-card-unread' if loop.index0 < unread_message_count else '' }}">
     <div class="msg-card-head">
-      <span class="msg-card-time">{{ m.time.strftime("%I:%M %p") if m.time else "" }}</span>
-      <span class="msg-card-date">{{ m.time.strftime("%d %b")|upper if m.time else "" }}</span>
+      <span class="msg-card-time">{{ m_local.strftime("%I:%M %p") if m_local else "" }}</span>
+      <span class="msg-card-date">{{ m_local.strftime("%d %b")|upper if m_local else "" }}</span>
     </div>
     <div class="msg-card-body">{{ m.content }}</div>
     <div class="msg-card-rule"></div>

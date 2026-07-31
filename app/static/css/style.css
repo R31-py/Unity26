@@ -584,7 +584,7 @@ table.data-table { width: 100%; min-width: 620px; border-collapse: collapse; }
 .cx-avatar-btn:focus-visible { outline: 2px solid var(--cx-blue-300); outline-offset: 2px; }
 
 /* --- avatar bottom sheet --- */
-.cx-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(4,9,20,0.55); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+.cx-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(4,9,20,0.82); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .cx-backdrop.open { opacity: 1; pointer-events: auto; }
 .cx-sheet { width: 100%; max-width: 480px; background: var(--cx-ink-900); border-top: 1px solid var(--cx-line); border-radius: 26px 26px 0 0; padding: 22px 22px max(22px, env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform .3s cubic-bezier(.22,.9,.32,1); }
 .cx-backdrop.open .cx-sheet { transform: translateY(0); }
@@ -984,3 +984,53 @@ body.gc-body { background: var(--gc-bg); color: var(--gc-ink); font-family: var(
   border: 1px solid #e2e2e6; padding: 8px 10px; resize: vertical;
 }
 .req-reviewed { font-size: 11px; color: var(--gc-muted); margin-top: 10px; }
+
+/* =====================================================================
+   Admin/Staff CRUD & request forms (final piece of the redesign) — same
+   light card language as everything else, on dashboard_light_base.html.
+   Deliberately namespaced under gc-form-* / gc-btn* rather than reusing
+   base.html's .form-card/.field/.btn-* names, since those are still used
+   as-is by login.html and the error pages and shouldn't be touched.
+   ===================================================================== */
+.gc-page-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--gc-orange); font-weight: 700;
+}
+.gc-page-h1 { font-family: var(--font-display); font-weight: 700; font-size: 21px; margin-top: 4px; }
+.gc-page-p { font-size: 13px; color: var(--gc-muted); margin-top: 6px; line-height: 1.5; }
+
+.gc-form-card {
+  background: var(--gc-card); border-radius: 20px; padding: 22px 20px;
+  box-shadow: 0 10px 24px rgba(20,20,30,0.06); margin-top: 16px;
+}
+.gc-field { margin-bottom: 16px; }
+.gc-field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--gc-ink); }
+.gc-field input[type="text"],
+.gc-field input[type="password"],
+.gc-field input[type="number"],
+.gc-field input[type="datetime-local"],
+.gc-field select,
+.gc-field textarea {
+  width: 100%; box-sizing: border-box; font-family: var(--font-body); font-size: 14px;
+  padding: 11px 13px; border-radius: 12px; border: 1px solid #e4e4e8;
+  background: #f7f7f9; color: var(--gc-ink);
+}
+.gc-field textarea { resize: vertical; min-height: 70px; }
+.gc-field select { appearance: auto; }
+.gc-field input:focus, .gc-field select:focus, .gc-field textarea:focus {
+  outline: none; border-color: var(--gc-orange); box-shadow: 0 0 0 3px rgba(242,98,15,0.15);
+}
+.gc-field-error { color: var(--gc-red); font-size: 12px; margin-top: 5px; font-weight: 600; }
+.gc-form-hint { font-size: 12px; color: var(--gc-muted); margin-top: 5px; }
+
+.gc-form-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.gc-btn {
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  padding: 11px 18px; border-radius: 12px; border: 1px solid transparent;
+  cursor: pointer; text-decoration: none; display: inline-flex; align-items: center;
+  justify-content: center;
+}
+.gc-btn-primary { background: var(--gc-orange); color: #fff; }
+.gc-btn-primary:hover { background: var(--gc-orange-dark); }
+.gc-btn-outline { background: #fff; border-color: #e4e4e8; color: var(--gc-ink); }
+.gc-btn-outline:hover { border-color: var(--gc-orange); color: var(--gc-orange); }

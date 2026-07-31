@@ -35,7 +35,7 @@
   </div>
   <div class="pts-event-foot">
     <span>{{ r.submitted_by.full_name if r.submitted_by else "—" }}</span>
-    <span>{{ r.created_at.strftime("%b %d, %H:%M") }}</span>
+    <span>{{ (r.created_at | local_time).strftime("%b %d, %H:%M") }}</span>
   </div>
   <div class="req-card-body">
     {% if r.target_type == "message" %}
@@ -71,7 +71,7 @@
   {% else %}
   <div class="req-reviewed">
     {{ r.reviewed_by.full_name if r.reviewed_by else "—" }}
-    {% if r.reviewed_at %}&middot; {{ r.reviewed_at.strftime("%b %d, %H:%M") }}{% endif %}
+    {% if r.reviewed_at %}&middot; {{ (r.reviewed_at | local_time).strftime("%b %d, %H:%M") }}{% endif %}
     {% if r.status == "rejected" and r.review_reason %}<br>{{ r.review_reason }}{% endif %}
   </div>
   {% endif %}

@@ -45,6 +45,11 @@ def create_app(config_class=Config):
 
     app.register_blueprint(live_bp)
 
+    # --- timezone display filter ---
+    from app.tz import to_local
+
+    app.jinja_env.filters["local_time"] = to_local
+
     # --- reminder checks, piggybacked on traffic instead of Vercel Cron ---
     # (Hobby plan only allows daily crons — see app/reminders.py docstring.)
     @app.before_request

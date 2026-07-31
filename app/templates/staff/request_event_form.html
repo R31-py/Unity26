@@ -1,32 +1,39 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}New event request{% endblock %}
-{% block content %}
-<div class="page-head">
-  <div class="eyebrow">Staff · Requests</div>
-  <h1>Propose an event</h1>
-  <p>This is sent to Admin for approval — it won't appear on the schedule until then.</p>
-</div>
 
-<div class="form-card">
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('staff.requests_list') }}">&larr; Back</a>
+  <span class="gc-page-title">Propose an event</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-page-eyebrow">Staff &middot; Requests</div>
+<div class="gc-page-h1">Propose an event</div>
+<div class="gc-page-p">This is sent to Admin for approval — it won't appear on the schedule until then.</div>
+
+<div class="gc-form-card">
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
-    <div class="field">
+    <div class="gc-field">
       {{ form.name.label }}
       {{ form.name(type="text") }}
-      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.name.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.description.label }}
       {{ form.description(rows=3) }}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.time.label }}
       {{ form.time() }}
-      {% for e in form.time.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.time.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="form-actions">
-      {{ form.submit(class="btn btn-amber") }}
-      <a class="btn btn-outline" href="{{ url_for('staff.requests_list') }}">Cancel</a>
+    <div class="gc-form-actions">
+      {{ form.submit(class="gc-btn gc-btn-primary") }}
+      <a class="gc-btn gc-btn-outline" href="{{ url_for('staff.requests_list') }}">Cancel</a>
     </div>
   </form>
 </div>

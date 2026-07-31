@@ -1,59 +1,66 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}{{ "Edit user" if mode == "edit" else "New user" }}{% endblock %}
-{% block content %}
-<div class="page-head">
-  <div class="eyebrow">Admin · Manage</div>
-  <h1>{{ "Edit " + user.full_name if mode == "edit" else "New user" }}</h1>
-</div>
 
-<div class="form-card">
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('admin.users') }}">&larr; Back</a>
+  <span class="gc-page-title">{{ "Edit user" if mode == "edit" else "New user" }}</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-page-eyebrow">Admin &middot; Manage</div>
+<div class="gc-page-h1">{{ "Edit " + user.full_name if mode == "edit" else "New user" }}</div>
+
+<div class="gc-form-card">
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
-    <div class="field">
+    <div class="gc-field">
       {{ form.name.label }}
       {{ form.name(type="text") }}
-      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.name.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.surname.label }}
       {{ form.surname(type="text") }}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.username.label }}
       {{ form.username(type="text", autocomplete="off") }}
-      {% for e in form.username.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.username.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.password.label }}
       {{ form.password(type="password", autocomplete="new-password") }}
       {% if mode == "edit" %}
-        <div class="hint">Leave blank to keep the current password.</div>
+        <div class="gc-form-hint">Leave blank to keep the current password.</div>
       {% endif %}
-      {% for e in form.password.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.password.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.role.label }}
       {{ form.role() }}
-      {% for e in form.role.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.role.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.group_id.label }}
       {{ form.group_id() }}
-      {% for e in form.group_id.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.group_id.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.room_id.label }}
       {{ form.room_id() }}
-      <div class="hint">Full rooms are hidden unless it's this user's current room.</div>
+      <div class="gc-form-hint">Full rooms are hidden unless it's this user's current room.</div>
       {% for e in form.room_id.errors %}
-        <div class="field-error">
+        <div class="gc-field-error">
           {{ "That room just filled up or is no longer available — pick another." if "choice" in e else e }}
         </div>
       {% endfor %}
     </div>
-    <div class="form-actions">
-      {{ form.submit(class="btn btn-amber") }}
-      <a class="btn btn-outline" href="{{ url_for('admin.users') }}">Cancel</a>
+    <div class="gc-form-actions">
+      {{ form.submit(class="gc-btn gc-btn-primary") }}
+      <a class="gc-btn gc-btn-outline" href="{{ url_for('admin.users') }}">Cancel</a>
     </div>
   </form>
 </div>

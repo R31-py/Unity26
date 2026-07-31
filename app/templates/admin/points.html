@@ -29,7 +29,7 @@
   </div>
   <div class="pts-event-foot">
     <span>{{ e.user.full_name if e.user else "Whole group" }}</span>
-    <span>{{ e.created_at.strftime("%b %d, %H:%M") }}</span>
+    <span>{{ (e.created_at | local_time).strftime("%b %d, %H:%M") }}</span>
   </div>
   <div class="pts-event-actions">
     <a class="pts-event-edit-link" href="{{ url_for('admin.point_edit', group_event_id=e.group_event_id) }}">Edit</a>

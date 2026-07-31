@@ -27,7 +27,7 @@
   {% if e.description %}<div class="pts-event-desc">{{ e.description }}</div>{% endif %}
   <div class="pts-event-foot">
     <span>{{ e.user.full_name if e.user else "Whole group" }}</span>
-    <span>{{ e.created_at.strftime("%b %d, %H:%M") }}</span>
+    <span>{{ (e.created_at | local_time).strftime("%b %d, %H:%M") }}</span>
   </div>
 </div>
 {% else %}

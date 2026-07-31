@@ -1,47 +1,54 @@
-{% extends "base.html" %}
+{% extends "dashboard_light_base.html" %}
 {% block title %}New points/penalty request{% endblock %}
-{% block content %}
-<div class="page-head">
-  <div class="eyebrow">Staff · Requests</div>
-  <h1>Propose a points / penalty entry</h1>
-  <p>This is sent to Admin for approval — the group's total won't change until then.</p>
-</div>
 
-<div class="form-card">
+{% block back_row %}
+<div class="gc-back-row">
+  <a class="gc-back-link" href="{{ url_for('staff.requests_list') }}">&larr; Back</a>
+  <span class="gc-page-title">Propose points / penalty</span>
+  <span style="width:40px;"></span>
+</div>
+{% endblock %}
+
+{% block grid_content %}
+<div class="gc-page-eyebrow">Staff &middot; Requests</div>
+<div class="gc-page-h1">Propose a points / penalty entry</div>
+<div class="gc-page-p">This is sent to Admin for approval — the group's total won't change until then.</div>
+
+<div class="gc-form-card">
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
-    <div class="field">
+    <div class="gc-field">
       {{ form.group_id.label }}
       {{ form.group_id() }}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.user_id.label }}
       {{ form.user_id() }}
-      <div class="hint">Leave as "—" to apply this to the whole group. Otherwise pick a member of the group selected above.</div>
-      {% for e in form.user_id.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      <div class="gc-form-hint">Leave as "—" to apply this to the whole group. Otherwise pick a member of the group selected above.</div>
+      {% for e in form.user_id.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.type.label }}
       {{ form.type() }}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.name.label }}
       {{ form.name(type="text") }}
-      {% for e in form.name.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.name.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.description.label }}
       {{ form.description(rows=3) }}
-      <div class="hint">The reason for this point or penalty — shown to the group/member once approved.</div>
+      <div class="gc-form-hint">The reason for this point or penalty — shown to the group/member once approved.</div>
     </div>
-    <div class="field">
+    <div class="gc-field">
       {{ form.value.label }}
       {{ form.value(type="number", min=1) }}
-      {% for e in form.value.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+      {% for e in form.value.errors %}<div class="gc-field-error">{{ e }}</div>{% endfor %}
     </div>
-    <div class="form-actions">
-      {{ form.submit(class="btn btn-amber") }}
-      <a class="btn btn-outline" href="{{ url_for('staff.requests_list') }}">Cancel</a>
+    <div class="gc-form-actions">
+      {{ form.submit(class="gc-btn gc-btn-primary") }}
+      <a class="gc-btn gc-btn-outline" href="{{ url_for('staff.requests_list') }}">Cancel</a>
     </div>
   </form>
 </div>
